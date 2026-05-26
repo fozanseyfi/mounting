@@ -1,0 +1,110 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  name            String
+  customer        String?
+  location        String?
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  panelWattage    Float    @default(580)   // tek panel gücü (W)
+  tiltAngle       Float    @default(25)    // sehpa eğim açısı (genel proje notu)
+  status          String   @default("DRAFT") // DRAFT, ACTIVE, ARCHIVED
+
+  tableTypes      TableType[]
+  pricing         PricingConfig?
+  totalsJson      String?
+}
+
+model TableType {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name            String   // "Tip-1", "Tip-2"
+  description     String?
+  panelsPerTable  Int      @default(28)
+  tableCount      Int      @default(1)
+  order           Int      @default(0)
+
+  parts           SehpaPart[]
+  fasteners       Fastener[]
+}
+
+model SehpaPart {
+  id                  String   @id @default(cuid())
+  tableTypeId         String
+  tableType           TableType @relation(fields: [tableTypeId], references: [id], onDelete: Cascade)
+
+  code                String
+  name                String
+  profileType         String
+  thickness           Float
+  edgesJson           String
+  bendCount           Int
+  bendAllowance       Float
+  developedWidth      Float
+  length              Float
+  quantityPerTable    Int
+  spareRatio          Float    @default(2)
+  unitWeight          Float
+  totalWeightPerTable Float
+  surfaceArea         Float
+  galvanizingWeight   Float
+  order               Int      @default(0)
+}
+
+model Fastener {
+  id                  String   @id @default(cuid())
+  tableTypeId         String
+  tableType           TableType @relation(fields: [tableTypeId], references: [id], onDelete: Cascade)
+
+  universalCode       String
+  detail              String
+  size                String
+  length              String?
+  grade               String
+  unitWeight          Float
+  quantityPerTable    Int
+  spareRatio          Float    @default(2)
+  totalWeightPerTable Float
+  source              String
+  order               Int      @default(0)
+}
+
+model PricingConfig {
+  id                          String   @id @default(cuid())
+  projectId                   String   @unique
+  project                     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  steelPricePerKg             Float    @default(0)     // TL/kg
+  galvanizingPricePerKg       Float    @default(0)     // TL/kg (kaplama maliyeti)
+  bendLaborPerKg              Float    @default(0)     // TL/kg (büküm + işçilik)
+  fastenerPricePerKg          Float    @default(0)     // TL/kg
+  transportationFlat          Float    @default(0)     // TL (sabit nakliye)
+  otherCosts                  Float    @default(0)     // TL (diğer giderler)
+  currency                    String   @default("TRY")
+  notes                       String?
+
+  updatedAt                   DateTime @updatedAt
+}
+
+model CustomFastenerLibrary {
+  id            String   @id @default(cuid())
+  universalCode String
+  detail        String
+  size          String
+  length        String?
+  grade         String
+  unitWeight    Float
+  createdAt     DateTime @default(now())
+}

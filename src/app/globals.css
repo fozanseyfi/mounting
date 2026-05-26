@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* --- Original (shadcn-style) tokens — kept for existing components --- */
+    --background: 210 20% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 140 47% 33%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 140 47% 33%;
+    --radius: 0.625rem;
+
+    /* --- Extended tokens from sister project (proje-takip) — emerald brand --- */
+    /* Brand emerald */
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-400: #34d399;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+
+    /* Slate aliases */
+    --c-slate-50:  #f8fafc;
+    --c-slate-100: #f1f5f9;
+    --c-slate-200: #e2e8f0;
+    --c-slate-300: #cbd5e1;
+    --c-slate-400: #94a3b8;
+    --c-slate-500: #64748b;
+    --c-slate-600: #475569;
+    --c-slate-700: #334155;
+    --c-slate-800: #1e293b;
+    --c-slate-900: #0f172a;
+
+    /* Semantic surface */
+    --bg:        #ffffff;
+    --bg-soft:   #f8fafc;
+    --bg-muted:  #f1f5f9;
+    --border-c:        #e2e8f0;
+    --border-strong:   #cbd5e1;
+
+    --text-c:        #0f172a;
+    --text-muted:    #475569;
+    --text-soft:     #64748b;
+    --text-faint:    #94a3b8;
+
+    /* Brand role */
+    --c-accent:        var(--brand-600);
+    --c-accent-hover:  var(--brand-700);
+    --c-accent-soft:   var(--brand-50);
+
+    /* Functional palette */
+    --c-blue:    #3b82f6;
+    --c-blue2:   #2563eb;
+    --c-green:   var(--brand-600);
+    --c-red:     #ef4444;
+    --c-yellow:  #f59e0b;
+    --c-yellow-dark: #d97706;
+    --c-orange:  #475569;
+    --c-purple:  #8b5cf6;
+
+    /* Shadows (sister project naming) */
+    --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+    --shadow-sm-c: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
+    --shadow-md-c: 0 2px 4px -1px rgb(15 23 42 / 0.05), 0 4px 12px -2px rgb(15 23 42 / 0.08);
+    --shadow-lg-c: 0 4px 8px -2px rgb(15 23 42 / 0.06), 0 12px 28px -8px rgb(15 23 42 / 0.12);
+    --shadow-focus: 0 0 0 4px rgb(16 185 129 / 0.12);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 6.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 6.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 140 47% 45%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 40.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 140 47% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Industrial accents */
+.hero-gradient {
+  background: linear-gradient(135deg, #2D7D46 0%, #1F5E33 100%);
+}
+
+.kpi-gradient-green {
+  background: linear-gradient(135deg, #4CAF50 0%, #2D7D46 100%);
+}
+.kpi-gradient-blue {
+  background: linear-gradient(135deg, #42A5F5 0%, #1976D2 100%);
+}
+.kpi-gradient-orange {
+  background: linear-gradient(135deg, #FFB74D 0%, #F57C00 100%);
+}
+.kpi-gradient-purple {
+  background: linear-gradient(135deg, #BA68C8 0%, #7B1FA2 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Tables */
+.bom-table th {
+  @apply bg-primary text-white font-semibold text-sm py-3 px-3 text-left;
+}
+.bom-table td {
+  @apply py-2.5 px-3 text-sm border-b border-slate-200;
+}
+.bom-table tr:hover td {
+  @apply bg-primary-50/50;
+}
+.bom-table .calc-cell {
+  @apply bg-accent-yellow/30 font-mono font-semibold;
+}
+
+/* ================================================================
+   Sister-project utility classes (Solar BOM yönetim sayfaları için)
+================================================================ */
+.shadow-soft   { box-shadow: var(--shadow-sm-c); }
+.shadow-medium { box-shadow: var(--shadow-md-c); }
+.shadow-large  { box-shadow: var(--shadow-lg-c); }
+.shadow-focus  { box-shadow: var(--shadow-focus); }
+
+/* Number input spinner gizle */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Safari/Chrome <summary> üçgen marker gizle */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+/* Animations */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-toast-in { animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up         { animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-slide-up-delay-1 { animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both; }
+.animate-slide-up-delay-2 { animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+.animate-slide-up-delay-3 { animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+.font-display { font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif; font-feature-settings: 'cv11'; }
