@@ -5,65 +5,52 @@
 1. https://vercel.com/new adresine git
 2. **Import Git Repository** → `fozanseyfi/mounting` seç
 3. Framework otomatik tanınır: **Next.js**
-4. Build Command otomatik gelir: `npm run build` (zaten `vercel.json`'da)
-5. **Deploy butonuna BASMA** — önce DB ekleyeceğiz
+4. **Deploy** butonuna bas — yaklaşık 2 dakikada deploy hazır
 
-## 2. Vercel Postgres Ekle
+## 2. Mevcut Durum
 
-Proje sayfasında:
-1. **Storage** sekmesi → **Create Database** → **Postgres**
-2. Bölge: `fra1` (Frankfurt) veya size yakını seç
-3. Database adı: `solar-bom-db`
-4. **Create & Continue** → otomatik olarak projeye bağlar
-5. Vercel `DATABASE_URL` (+ `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, vs.) env vars'ı otomatik ekler
+✅ **Statik sayfalar çalışır:** Anasayfa, Nasıl Çalışır, İletişim, Diğer Platformlar, Profilim vb.
 
-## 3. (Opsiyonel) İletişim Formu için Gmail
+⚠️ **DB bağımlı sayfalar henüz çalışmaz:** Dashboard, Projeler, DIN Katalog (kullanıcı kütüphanesi), Raporlar.
 
-**Settings → Environment Variables**:
-- `GMAIL_USER` = `bilgi@example.com`
-- `GMAIL_APP_PASSWORD` = `xxxx xxxx xxxx xxxx` (Google App Password)
+Bunlar sayfa açıldığında "DB bulunamadı" hatası verir. Storage eklendiğinde otomatik çalışacak.
 
-## 4. Deploy
+## 3. Daha Sonra: Supabase Bağlantısı
 
-1. **Deployments** sekmesi → **Redeploy** (en üst sağ)
-2. Build sırasında:
-   - `prisma generate` çalışır
-   - `prisma db push` ile şema Postgres'e atılır
-   - `next build` Next.js'i derler
-3. ~2 dakika sonra deploy hazır
+Hazır olduğunda:
 
-## 5. İlk Veri (Seed)
+1. Supabase'de yeni proje oluştur → **Settings → Database** → **Connection string** (Mode: `Transaction`)
+2. Vercel proje sayfası → **Settings → Environment Variables**
+3. Yeni env var ekle:
+   - Key: `DATABASE_URL`
+   - Value: Supabase'den aldığın connection string
+   - Environments: Production, Preview, Development (hepsi)
+4. **Save** → **Deployments → Redeploy**
 
-Vercel Postgres boş gelir. İki seçenek:
-
-**A) Manuel via UI** — Dashboard'a girip ilk projeyi UI'dan oluşturun.
-
-**B) Lokal seed → prod DB**
+İlk push'ta şemayı Supabase'e atmak için:
 ```bash
-# Vercel dashboard'tan POSTGRES_PRISMA_URL'i kopyala
-# Lokal .env dosyasına yapıştır
-echo 'DATABASE_URL="postgresql://..."' > .env
+# Lokal .env'e DATABASE_URL kaydet (Supabase URL)
+echo 'DATABASE_URL="postgresql://postgres.xxx:xxx@xxx.supabase.com:6543/postgres"' > .env
 npx prisma db push
+# (Opsiyonel) Seed data
 npx tsx prisma/seed.ts
 ```
 
-## Sonraki push'larda
+## (Opsiyonel) Lokal Geliştirme
 
-`git push` yeterli — Vercel otomatik yeniden build eder.
-
-## Lokal geliştirme
-
-Lokal Postgres kurmanız gerekir (önceden SQLite vardı):
+Lokalde de Postgres gerek. En kolay yöntem Docker:
 ```bash
-# Docker ile en kolay:
 docker run -d --name solar-pg -p 5432:5432 \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_DB=solar_bom \
   postgres:16
 
-# Veya Neon dev DB (neon.tech)
-# .env içine DATABASE_URL koyun
+echo 'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/solar_bom"' > .env
 npm run db:push
 npm run db:seed
 npm run dev
 ```
+
+## Sonraki push'lar
+
+`git push` yeterli — Vercel otomatik yeniden build eder.
