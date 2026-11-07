@@ -1,281 +1,245 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
-  User as UserIcon,
-  Save,
-  Building2,
+  UserCircle2,
   Shield,
-  Calendar,
-  KeyRound,
   Mail,
+  Building2,
+  Calendar,
+  User,
+  Save,
+  KeyRound,
+  Users,
+  UserPlus,
   Lock,
-  ShieldAlert,
-  Phone,
+  ArrowRight,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/toast';
-import { formatDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { readProfile, writeProfile, effectivePanelName, type LocalProfile } from '@/lib/local-profile';
+import { logAudit } from '@/lib/local-admin';
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '??';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function formatDate(d: string): string {
+  return new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d));
+}
+
+type Msg = { tone: 'error' | 'success'; text: string } | null;
 
 export default function AccountPage() {
-  const { toast } = useToast();
   const [profile, setProfile] = useState<LocalProfile | null>(null);
   const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [panel, setPanel] = useState('');
-  const [pwd, setPwd] = useState({ current: '', next: '', repeat: '' });
+  const [email, setEmail] = useState('');
+  const [panelName, setPanelName] = useState('');
+  const [profileMsg, setProfileMsg] = useState<Msg>(null);
+  const [panelMsg, setPanelMsg] = useState<Msg>(null);
 
   useEffect(() => {
     const p = readProfile();
     setProfile(p);
     setFullName(p.fullName);
-    setPhone(p.phone);
-    setPanel(p.panelName);
+    setEmail(p.email);
+    setPanelName(effectivePanelName(p));
   }, []);
 
-  if (!profile) {
-    return (
-      <main className="flex-1 p-6">
-        <Card className="rounded-2xl bg-white border border-slate-200 p-6 shadow-soft">
-          <div className="text-sm text-text2">Profil yükleniyor...</div>
-        </Card>
-      </main>
-    );
+  if (!profile) return <main className="flex-1 p-4 sm:p-6 lg:p-8" />;
+
+  const roleLabel = 'Yönetici';
+  const firmName = effectivePanelName(profile) || 'Solar BOM';
+
+  function saveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!fullName.trim()) {
+      setProfileMsg({ tone: 'error', text: 'Ad Soyad boş olamaz.' });
+      return;
+    }
+    writeProfile({ fullName: fullName.trim(), email: email.trim() });
+    setProfile(readProfile());
+    logAudit('settings.profile', 'Profil güncellendi', 'settings', fullName.trim());
+    setProfileMsg({ tone: 'success', text: 'Profil bilgileri kaydedildi.' });
   }
 
-  function saveProfile() {
-    writeProfile({ fullName: fullName.trim(), phone: phone.trim() });
-    setProfile((p) => (p ? { ...p, fullName: fullName.trim(), phone: phone.trim() } : p));
-    toast('Profil bilgileri kaydedildi.', 'success');
+  function savePanel(e: React.FormEvent) {
+    e.preventDefault();
+    writeProfile({ panelName: panelName.trim() });
+    setProfile(readProfile());
+    logAudit('settings.panel', 'Panel adı güncellendi', 'settings', panelName.trim());
+    setPanelMsg({ tone: 'success', text: 'Panel adı kaydedildi.' });
   }
-
-  function savePanel() {
-    writeProfile({ panelName: panel.trim() });
-    setProfile((p) => (p ? { ...p, panelName: panel.trim() } : p));
-    toast('Panel adı güncellendi.', 'success');
-  }
-
-  function savePassword() {
-    if (!pwd.current) return toast('Mevcut şifreyi girin.', 'error');
-    if (pwd.next.length < 8) return toast('Yeni şifre en az 8 karakter olmalı.', 'error');
-    if (pwd.next !== pwd.repeat) return toast('Yeni şifre ile tekrar eşleşmiyor.', 'error');
-    setPwd({ current: '', next: '', repeat: '' });
-    toast('Şifre güncellendi (lokal mod).', 'success');
-  }
-
-  const initials = (profile.fullName || '?')
-    .split(' ')
-    .map((p) => p[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-
-  const eff = effectivePanelName(profile);
 
   return (
-    <main className="flex-1 p-6">
-      <div className="max-w-4xl mx-auto space-y-4">
-        {/* HEADER CARD */}
-        <div className="rounded-2xl bg-white border border-brand/25 shadow-soft overflow-hidden">
-          <div className="bg-gradient-to-br from-brand/10 via-white to-brand/5 p-6">
-            <div className="flex items-start gap-4 flex-wrap">
-              <div
-                className="flex items-center justify-center w-20 h-20 rounded-2xl text-white font-extrabold text-2xl shadow-sm shrink-0"
-                style={{ background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)' }}
-              >
-                {initials}
+    <main className="flex-1 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-4xl space-y-6">
+        {/* HERO */}
+        <Card className="overflow-hidden border-slate-200/80 shadow-sm">
+          <CardContent className="p-0">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/40" />
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-200" />
+
+              <div className="relative grid gap-6 p-6 sm:grid-cols-[auto_1fr] sm:p-7">
+                <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 text-2xl font-bold tracking-tight text-white shadow-lg shadow-emerald-900/20 ring-4 ring-white">
+                  {initials(profile.fullName)}
+                </div>
+                <div className="min-w-0 space-y-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-emerald-700">
+                    <UserCircle2 className="size-3" />
+                    Profilim
+                  </span>
+                  <h1 className="truncate text-2xl font-bold tracking-tight text-slate-900">{profile.fullName}</h1>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-0.5 font-semibold text-slate-700">
+                      <Shield className="size-3 text-emerald-600" />
+                      {roleLabel}
+                    </span>
+                    {profile.email && (
+                      <span className="inline-flex items-center gap-1.5 text-slate-500">
+                        <Mail className="size-3.5" />
+                        {profile.email}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="min-w-0 flex-1">
-                <div className="inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[1.4px] text-brand">
-                  <UserIcon className="w-3 h-3" />
-                  Profilim
-                </div>
-                <h1 className="font-display text-2xl md:text-[28px] font-extrabold text-text tracking-tight mt-2 leading-tight">
-                  {profile.fullName}
-                </h1>
-                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand text-white text-[10px] font-bold uppercase tracking-wider">
-                    <Shield className="w-3 h-3" />
-                    Yönetici
-                  </span>
-                  <span className="text-[13px] text-text2 inline-flex items-center gap-1">
-                    <Mail className="w-3.5 h-3.5 text-text3" />
-                    {profile.email}
-                  </span>
-                </div>
+              <div className="relative grid gap-px overflow-hidden border-t border-slate-200/80 bg-slate-200/80 sm:grid-cols-3">
+                <MetaCell icon={Building2} label="Şirket" value={firmName} />
+                <MetaCell icon={Shield} label="Rol" value={roleLabel} />
+                <MetaCell icon={Calendar} label="Üyelik Tarihi" value={formatDate(profile.createdAt)} />
               </div>
             </div>
-
-            <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <InfoChip icon={Building2} label="Şirket / Panel" value={eff || '—'} />
-              <InfoChip icon={Shield} label="Rol" value="Yönetici" />
-              <InfoChip icon={Calendar} label="Üyelik Tarihi" value={formatDate(profile.createdAt)} />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* PROFİL BİLGİLERİ */}
         <SectionCard
-          icon={UserIcon}
+          icon={User}
           title="Profil bilgileri"
-          description="Görünen adınızı ve iletişim numaranızı güncelleyin."
+          subtitle="Görünen adınızı güncelleyin — ekip arkadaşlarınız sizi bu isimle görür."
         >
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">Ad Soyad</Label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Adınız Soyadınız" />
+          <form onSubmit={saveProfile} className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldGroup label="Ad Soyad">
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Ad Soyad" />
+              </FieldGroup>
+              <FieldGroup label="E-posta">
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
+                  <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="pl-9" />
+                </div>
+              </FieldGroup>
             </div>
-            <div>
-              <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">Telefon</Label>
-              <div className="relative">
-                <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-                <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="pl-9" placeholder="+90 ..." />
-              </div>
+            {profileMsg && <FormMessage tone={profileMsg.tone}>{profileMsg.text}</FormMessage>}
+            <div className="flex">
+              <Button type="submit" size="sm">
+                <Save className="size-3.5" />
+                Kaydet
+              </Button>
             </div>
-            <div className="sm:col-span-2">
-              <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">E-posta</Label>
-              <div className="relative">
-                <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-                <Input value={profile.email} readOnly disabled className="pl-9 cursor-not-allowed bg-bg2" />
-              </div>
-              <p className="text-[11px] text-text3 mt-1 inline-flex items-center gap-1">
-                <Lock className="w-3 h-3" />
-                E-posta değiştirilemez. Değişim için iletişime geçin.
-              </p>
-            </div>
-          </div>
-          <div className="mt-5">
-            <Button onClick={saveProfile}>
-              <Save className="w-4 h-4" />
-              Kaydet
-            </Button>
-          </div>
+          </form>
         </SectionCard>
 
         {/* ŞİRKET / PANEL ADI */}
-        <SectionCard
-          icon={Building2}
-          title="Şirket / Panel Adı"
-          description={
-            <>
-              Topbar'da görünen ad. Varsayılan olarak <strong className="text-text">ad-soyadınız</strong> kullanılır;
-              şirket veya ekip adı yazmak isterseniz aşağıdan değiştirebilirsiniz.
-            </>
-          }
-        >
-          <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">
-            Şirket / Panel Adı
-          </Label>
-          <Input
-            value={panel}
-            onChange={(e) => setPanel(e.target.value)}
-            placeholder={profile.fullName ? `Otomatik: ${profile.fullName}` : 'Şirket / panel adı'}
-          />
-          <div className="text-[11px] text-text3 mt-1.5">
-            Şu an gösterilen: <strong className="text-text font-semibold">{eff || '—'}</strong>
-            {!profile.panelName.trim() && (
-              <span className="ml-1.5 inline-flex items-center px-1.5 py-0 rounded bg-brand/10 text-brand text-[9px] font-bold uppercase tracking-wider">
-                Otomatik
-              </span>
-            )}
-          </div>
-          <div className="mt-5 flex items-center gap-2 flex-wrap">
-            <Button onClick={savePanel}>
-              <Save className="w-4 h-4" />
-              Kaydet
-            </Button>
-            {profile.panelName.trim() && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  writeProfile({ panelName: '' });
-                  setProfile((p) => (p ? { ...p, panelName: '' } : p));
-                  setPanel('');
-                  toast('Otomatik (ad-soyad) kullanılıyor.', 'info');
-                }}
-              >
-                Varsayılana Döndür
+        <SectionCard icon={Building2} title="Şirket / panel adı" subtitle="Sidebar başlığında ve topbar'da görünen şirket adı.">
+          <form onSubmit={savePanel} className="space-y-4">
+            <FieldGroup label="Şirket Adı">
+              <Input value={panelName} onChange={(e) => setPanelName(e.target.value)} placeholder="Örn. Kontrolmatik" />
+            </FieldGroup>
+            {panelMsg && <FormMessage tone={panelMsg.tone}>{panelMsg.text}</FormMessage>}
+            <div className="flex">
+              <Button type="submit" size="sm">
+                <Save className="size-3.5" />
+                Kaydet
               </Button>
-            )}
-          </div>
+            </div>
+          </form>
         </SectionCard>
 
         {/* ŞİFRE GÜVENLİĞİ */}
         <SectionCard
           icon={KeyRound}
           title="Şifre güvenliği"
-          description={
-            <>
-              Mevcut şifrenizi onaylayarak yeni bir şifre belirleyin. Şifrenizi unuttuysanız çıkış yapıp{' '}
-              <strong className="text-text">"Şifremi unuttum"</strong> bağlantısını kullanın.
-            </>
-          }
+          subtitle="Bu platformun kendi giriş sistemi Supabase entegrasyonu ile aktif olacak. O zamana kadar şifre değişikliği yapılamaz."
         >
-          <div>
-            <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">Mevcut Şifre</Label>
-            <div className="relative">
-              <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-              <Input
-                type="password"
-                value={pwd.current}
-                onChange={(e) => setPwd({ ...pwd, current: e.target.value })}
-                className="pl-9"
-                placeholder="••••••••"
-              />
+          <div className="space-y-4 opacity-60">
+            <FieldGroup label="Mevcut Şifre">
+              <PasswordInput disabled />
+            </FieldGroup>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FieldGroup label="Yeni Şifre">
+                <PasswordInput disabled placeholder="En az 8 karakter" />
+              </FieldGroup>
+              <FieldGroup label="Yeni Şifre (Tekrar)">
+                <PasswordInput disabled placeholder="En az 8 karakter" />
+              </FieldGroup>
             </div>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4 mt-4">
-            <div>
-              <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">Yeni Şifre</Label>
-              <div className="relative">
-                <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-                <Input
-                  type="password"
-                  value={pwd.next}
-                  onChange={(e) => setPwd({ ...pwd, next: e.target.value })}
-                  className="pl-9"
-                  placeholder="En az 8 karakter"
-                />
-              </div>
+            <div className="flex">
+              <Button type="button" size="sm" disabled>
+                <KeyRound className="size-3.5" />
+                Şifreyi Güncelle
+              </Button>
             </div>
-            <div>
-              <Label className="!mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text3">
-                Yeni Şifre (Tekrar)
-              </Label>
-              <div className="relative">
-                <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text3" />
-                <Input
-                  type="password"
-                  value={pwd.repeat}
-                  onChange={(e) => setPwd({ ...pwd, repeat: e.target.value })}
-                  className="pl-9"
-                  placeholder="En az 8 karakter"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-5 flex items-center flex-wrap gap-3">
-            <Button onClick={savePassword}>
-              <Save className="w-4 h-4" />
-              Şifreyi Güncelle
-            </Button>
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-text3">
-              <ShieldAlert className="w-3.5 h-3.5 text-yellow" />
-              Şifre değişiminden sonra mevcut oturumlar bozulmaz.
-            </span>
           </div>
         </SectionCard>
+
+        {/* EKİP ve YETKİLENDİRME */}
+        <Card className="overflow-hidden border-emerald-200 shadow-sm">
+          <CardContent className="p-0">
+            <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
+              <div className="space-y-4 p-6">
+                <div className="flex items-start gap-3">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
+                    <Users className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10.5px] font-semibold uppercase tracking-wider text-emerald-700">Yönetici Paneli</p>
+                    <h3 className="text-lg font-semibold tracking-tight text-slate-900">Ekip ve Yetkilendirme</h3>
+                    <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+                      Kullanıcı davet et, rolleri yönet, kaynak erişimini kişi bazında ayarla.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <FeatureChip icon={UserPlus} title="Kullanıcı Davet Et" desc="E-posta ile davet" />
+                  <FeatureChip icon={Shield} title="Rol Yönetimi" desc="Yönetici / Kullanıcı / Görüntüleyici" />
+                  <FeatureChip icon={Lock} title="Erişim Kontrolü" desc="Proje bazlı gizle / salt okunur" />
+                </div>
+              </div>
+              <div className="flex items-stretch border-t border-emerald-100 bg-gradient-to-br from-emerald-50 to-emerald-100/60 p-6 lg:border-l lg:border-t-0">
+                <Link
+                  href="/users"
+                  className="group inline-flex w-full items-center justify-between gap-3 rounded-xl bg-emerald-600 px-5 py-4 text-sm font-semibold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg lg:w-auto lg:flex-col lg:items-center lg:justify-center lg:gap-2 lg:px-7 lg:py-5"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/20 lg:size-12">
+                    <Users className="size-5 lg:size-6" />
+                  </div>
+                  <div className="flex flex-1 flex-col text-left lg:flex-none lg:items-center lg:text-center">
+                    <span className="text-[15px] font-bold leading-tight lg:text-base">Ekibi Yönet</span>
+                    <span className="text-[11px] font-medium opacity-80 lg:mt-0.5">Davet, rol, erişim</span>
+                  </div>
+                  <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-1 lg:hidden" />
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );
 }
 
-function InfoChip({
+function MetaCell({
   icon: Icon,
   label,
   value,
@@ -285,13 +249,13 @@ function InfoChip({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 flex items-center gap-2.5">
-      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-brand/10 text-brand shrink-0">
-        <Icon className="w-4 h-4" />
-      </span>
+    <div className="flex items-center gap-3 bg-white px-5 py-3.5">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+        <Icon className="size-4" />
+      </div>
       <div className="min-w-0">
-        <div className="text-[9px] font-bold uppercase tracking-wider text-text3">{label}</div>
-        <div className="text-[13px] font-semibold text-text truncate">{value}</div>
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{label}</p>
+        <p className="mt-0.5 truncate text-sm font-semibold text-slate-900">{value}</p>
       </div>
     </div>
   );
@@ -300,27 +264,80 @@ function InfoChip({
 function SectionCard({
   icon: Icon,
   title,
-  description,
+  subtitle,
   children,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
-  description: React.ReactNode;
+  subtitle?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 shadow-soft">
-      <div className="p-6">
-        <div className="flex items-start gap-3 mb-5">
-          <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand/10 text-brand shrink-0">
-            <Icon className="w-5 h-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h3 className="font-display text-base font-bold text-text tracking-tight">{title}</h3>
-            <p className="text-[13px] text-text2 mt-0.5 leading-relaxed">{description}</p>
+    <Card className="border-slate-200 shadow-sm">
+      <CardContent className="space-y-5 p-5 sm:p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+            <Icon className="size-4" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold tracking-tight text-slate-900">{title}</h3>
+            {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{subtitle}</p>}
           </div>
         </div>
-        {children}
+        <div className="ml-0 sm:ml-12">{children}</div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-[10.5px] font-semibold uppercase tracking-wider text-slate-500">{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+function PasswordInput({ disabled, placeholder }: { disabled?: boolean; placeholder?: string }) {
+  return (
+    <div className="relative">
+      <KeyRound className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
+      <Input type="password" disabled={disabled} placeholder={placeholder ?? '••••••••'} className="pl-9" />
+    </div>
+  );
+}
+
+function FormMessage({ tone, children }: { tone: 'error' | 'success'; children: React.ReactNode }) {
+  return (
+    <p
+      className={cn(
+        'rounded-md border px-3 py-2 text-xs font-medium',
+        tone === 'error' ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+function FeatureChip({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
+      <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
+        <Icon className="size-3.5" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11.5px] font-semibold leading-tight text-slate-900">{title}</p>
+        <p className="mt-0.5 text-[10.5px] leading-tight text-slate-500">{desc}</p>
       </div>
     </div>
   );

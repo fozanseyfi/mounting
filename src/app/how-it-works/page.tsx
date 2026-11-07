@@ -1,5 +1,5 @@
-'use client';
-
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import {
   Sparkles,
   Lightbulb,
@@ -18,13 +18,14 @@ import {
   Cog,
   Droplets,
   FlaskConical,
+  ArrowRight,
 } from 'lucide-react';
 
 interface Step {
   num: string;
   title: string;
   summary: string;
-  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+  icon: React.ComponentType<{ className?: string }>;
   details: {
     intro: string;
     bullets: { label: string; value: string }[];
@@ -156,78 +157,111 @@ const STATS = [
 
 export default function HowItWorksPage() {
   return (
-    <main className="flex-1 p-6">
-      {/* HERO */}
-      <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-brand/8 via-white to-white p-5 sm:p-6 mb-4 animate-slide-up">
-        <div className="flex items-start gap-4">
-          <span className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand text-white shadow-soft shrink-0">
-            <HelpCircle size={26} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-[1.5px]">
-              <Sparkles size={11} /> NASIL ÇALIŞIR
-            </span>
-            <h1 className="font-display text-2xl sm:text-[28px] font-extrabold text-text leading-tight tracking-tight mt-2">
-              Solar BOM Platformunu Adım Adım Tanıyın
-            </h1>
-            <p className="text-sm text-text2 mt-2 max-w-3xl leading-relaxed">
-              Proje oluşturmaktan Excel/PDF rapora kadar tüm akış {STEPS.length} adımda anlatıldı.
-              Her adımda ne yapıldığını, hangi değerin otomatik hesaplandığını ve hangi pratik
-              özelliklerin işinizi kolaylaştırdığını detayda görebilirsiniz.
-            </p>
+    <main className="flex-1 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-5xl space-y-6">
+        {/* Hero — teklif platformu ile aynı */}
+        <div className="overflow-hidden rounded-2xl border bg-gradient-to-br from-emerald-50 via-white to-slate-50 shadow-sm">
+          <div className="flex items-start gap-4 p-6 sm:items-center sm:p-8">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm sm:size-14">
+              <HelpCircle className="size-6 sm:size-7" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-soft/60 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-primary-soft-foreground">
+                <Sparkles className="size-3" />
+                Nasıl Çalışır
+              </div>
+              <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                Solar BOM Platformunu Adım Adım Tanıyın
+              </h1>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Proje oluşturmaktan Excel/PDF rapora kadar tüm akışı {STEPS.length} adımda inceleyin.
+                Her adımda ne yapılır, hangi değer otomatik hesaplanır, ne tip pratikler işinizi
+                kolaylaştırır — burada yazılı.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 border-t bg-white/60 p-4 sm:grid-cols-4 sm:p-6">
+            {STATS.map((s) => (
+              <Stat key={s.label} icon={s.icon} label={s.value} caption={s.label} />
+            ))}
+          </div>
+        </div>
+
+        {/* İpucu */}
+        <div className="rounded-2xl border border-info/30 bg-info-soft/40 p-4">
+          <div className="flex items-start gap-2.5">
+            <Lightbulb className="mt-0.5 size-5 shrink-0 text-info-soft-foreground" />
+            <div>
+              <p className="text-sm font-bold text-info-soft-foreground">İpucu</p>
+              <p className="mt-0.5 text-[13px] leading-relaxed text-info-soft-foreground/90">
+                Parça ölçülerini girdiğiniz anda sac açılımı, birim ağırlık, galvaniz ve fire dahil
+                masa tonajı otomatik hesaplanır. Masa adedini değiştirdiğinizde proje toplamı anında
+                güncellenir.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Adımlar — her adım açılır/kapanır */}
+        <div className="relative">
+          <div className="pointer-events-none absolute bottom-0 left-[27px] top-0 hidden w-px bg-gradient-to-b from-primary/30 via-border to-transparent sm:block" />
+          <div className="space-y-2.5">
+            {STEPS.map((step, idx) => (
+              <StepCard key={step.num} step={step} first={idx === 0} />
+            ))}
+          </div>
+        </div>
+
+        {/* Teknik açıklamalar — formüller */}
+        <TechnicalExplanations />
+
+        {/* Alt CTA */}
+        <div className="rounded-2xl border bg-card p-6 text-center shadow-sm">
+          <h3 className="text-lg font-bold tracking-tight text-foreground">Hazır olduğunda yeni bir proje aç</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Masa tiplerini tanımlayıp tonaj hesabına hemen başlayabilirsin.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Link
+              href="/catalog"
+              className="inline-flex items-center gap-1.5 rounded-lg border bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary/30 hover:bg-primary-soft hover:text-primary-soft-foreground"
+            >
+              <Library className="size-4" />
+              DIN Kataloğu İncele
+            </Link>
+            <Link
+              href="/projects/new"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            >
+              <Sparkles className="size-4" />
+              Yeni Proje Oluştur
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* KPI ŞERİDİ */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 animate-slide-up">
-        {STATS.map((s) => {
-          const Icon = s.icon;
-          return (
-            <div
-              key={s.label}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-3 flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-soft transition-all"
-            >
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand/10 text-brand shrink-0">
-                <Icon size={18} />
-              </span>
-              <div className="min-w-0">
-                <div className="font-mono text-lg font-extrabold text-text leading-none tabular-nums">
-                  {s.value}
-                </div>
-                <div className="text-[11px] text-text3 mt-0.5">{s.label}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* İPUCU */}
-      <div className="rounded-xl border border-blue/25 bg-blue/5 px-4 py-3 mb-5 flex items-start gap-3 animate-slide-up">
-        <Lightbulb size={18} className="text-blue shrink-0 mt-0.5" />
-        <div className="text-[13px] text-text2 leading-relaxed">
-          <strong className="text-blue font-bold">İpucu:</strong> İlk projenizi seed verisi olan
-          "Antalya GES Saha-1" veya "Konya GES Mega Saha" projelerini açarak inceleyebilirsiniz —
-          tipik bir solar BOM\'un nasıl yapılandırıldığını görürsünüz.
-        </div>
-      </div>
-
-      {/* ADIM KARTLARI */}
-      <div className="space-y-2.5">
-        {STEPS.map((step, i) => (
-          <StepCard key={step.num} step={step} defaultOpen={i === 0} />
-        ))}
-      </div>
-
-      {/* TEKNİK AÇIKLAMALAR — Formüller, K-faktörü, galvaniz */}
-      <TechnicalExplanations />
-
-      <div className="mt-8 mb-2 text-center">
-        <div className="text-[11px] text-text3 font-mono">
-          {STEPS.length} adımda eksiksiz solar BOM hesabı · solar-bom-platformu
-        </div>
-      </div>
     </main>
+  );
+}
+
+function Stat({
+  icon: Icon,
+  label,
+  caption,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  caption: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-lg border border-border/60 bg-card p-2.5 shadow-sm">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-soft-foreground">
+        <Icon className="size-4" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-base font-bold leading-none tabular-nums text-foreground">{label}</p>
+        <p className="mt-0.5 text-[10.5px] text-muted-foreground">{caption}</p>
+      </div>
+    </div>
   );
 }
 
@@ -240,7 +274,7 @@ export default function HowItWorksPage() {
 
 function TechnicalExplanations() {
   return (
-    <section className="mt-10 space-y-6">
+    <section className="space-y-6">
       {/* Section Header */}
       <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-brand/8 via-white to-white p-5 sm:p-6 animate-slide-up">
         <div className="flex items-start gap-4">
@@ -602,58 +636,54 @@ function Tip({ children, variant = 'warning' }: { children: React.ReactNode; var
   );
 }
 
-function StepCard({ step, defaultOpen = false }: { step: Step; defaultOpen?: boolean }) {
+function StepCard({ step, first = false }: { step: Step; first?: boolean }) {
   const Icon = step.icon;
   return (
     <details
-      open={defaultOpen}
-      className="group rounded-xl border border-slate-200 bg-white overflow-hidden transition-all open:border-l-4 open:border-l-brand open:shadow-soft"
+      className={cn(
+        'group/step relative overflow-hidden rounded-xl border border-l-2 bg-card shadow-sm transition-all open:shadow-md',
+        first ? 'border-l-primary' : 'border-l-border'
+      )}
     >
-      <summary className="cursor-pointer list-none px-4 py-3.5 flex items-center gap-3.5 hover:bg-bg2 transition-colors">
-        <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-brand text-white shrink-0 shadow-sm">
-          <Icon size={20} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[9px] uppercase tracking-[1.5px] font-bold text-brand">
-            ADIM {step.num}
+      <summary className="flex cursor-pointer list-none flex-col gap-3 p-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center sm:p-5 [&::-webkit-details-marker]:hidden">
+        <div className="flex shrink-0 items-start gap-3 sm:flex-col sm:items-center sm:gap-2">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <Icon className="size-5" />
           </div>
-          <div className="font-display font-extrabold text-[15px] sm:text-base text-text tracking-tight leading-tight mt-0.5">
-            {step.title}
-          </div>
-          <div className="text-[12.5px] text-text2 mt-0.5 truncate sm:whitespace-normal">
-            {step.summary}
-          </div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            Adım {step.num}
+          </p>
         </div>
-        <span className="flex items-center gap-1 text-[11px] text-text3 font-medium shrink-0 group-open:hidden">
-          Detaylar
-          <ChevronDown size={14} />
-        </span>
-        <span className="hidden group-open:flex items-center gap-1 text-[11px] text-brand font-bold shrink-0">
-          Kapat
-          <ChevronDown size={14} className="rotate-180" />
-        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h3 className="text-base font-bold tracking-tight text-foreground sm:text-lg">{step.title}</h3>
+            <div className="flex shrink-0 items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+              <span className="hidden sm:inline">Detaylar</span>
+              <ChevronDown className="size-4 transition-transform group-open/step:rotate-180" />
+            </div>
+          </div>
+          <p className="mt-1 text-[13px] text-muted-foreground">{step.summary}</p>
+        </div>
       </summary>
 
-      <div className="px-4 pb-4 pt-1 border-t border-slate-200 bg-bg2/40">
-        <p className="text-[13px] text-text leading-relaxed mt-3">{step.details.intro}</p>
-
+      <div className="border-t bg-muted/20 p-4 sm:p-5 sm:pl-[88px]">
+        <p className="text-[13px] leading-relaxed text-foreground">{step.details.intro}</p>
         {step.details.bullets.length > 0 && (
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <ul className="mt-3 space-y-1.5">
             {step.details.bullets.map((b) => (
-              <div key={b.label} className="rounded-lg border border-slate-200 bg-white px-3 py-2">
-                <div className="text-[9px] uppercase tracking-wider font-bold text-text3">{b.label}</div>
-                <div className="text-xs font-semibold text-text mt-0.5">{b.value}</div>
-              </div>
+              <li key={b.label} className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground">
+                <ArrowRight className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                <span>
+                  <strong className="font-semibold">{b.label}:</strong> {b.value}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-
         {step.details.tip && (
-          <div className="mt-3 rounded-lg bg-yellow/10 border border-yellow/30 px-3 py-2 flex items-start gap-2">
-            <Lightbulb size={13} className="text-yellow shrink-0 mt-0.5" />
-            <span className="text-[12px] text-text2">
-              <strong className="text-yellow font-bold">İpucu:</strong> {step.details.tip}
-            </span>
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary-soft/40 px-3 py-2 text-[12px] leading-relaxed text-primary-soft-foreground">
+            <Lightbulb className="mt-0.5 size-3.5 shrink-0" />
+            <span>{step.details.tip}</span>
           </div>
         )}
       </div>

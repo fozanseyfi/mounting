@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { DIN_CATALOG } from '@/lib/constants/din-catalog';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const customs = await prisma.customFastenerLibrary.findMany({ orderBy: { createdAt: 'desc' } });
+  const { data: customs } = await safeQuery(() => prisma.customFastenerLibrary.findMany({ orderBy: { createdAt: 'desc' } }), []);
   const customMapped = customs.map((c) => ({
     code: c.universalCode,
     detail: c.detail,

@@ -11,7 +11,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 140 47% 33%;
+    --primary: 161 94% 30%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -23,7 +23,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 140 47% 33%;
+    --ring: 161 94% 30%;
     --radius: 0.625rem;
 
     /* --- Extended tokens from sister project (proje-takip) — emerald brand --- */
@@ -136,7 +136,7 @@
 
 /* Industrial accents */
 .hero-gradient {
-  background: linear-gradient(135deg, #2D7D46 0%, #1F5E33 100%);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 .kpi-gradient-green {
@@ -218,3 +218,28 @@ details > summary::-webkit-details-marker { display: none; }
 .animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
 
 .font-display { font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif; font-feature-settings: 'cv11'; }
+
+/* ================================================================
+   Teklif platformu ile ortak app-shell yardımcıları
+================================================================ */
+:root { --sidebar-w: 14rem; }
+@media (min-width: 1024px) {
+  .sidebar-aware { padding-left: var(--sidebar-w, 14rem); transition: padding-left 200ms; }
+}
+@keyframes nav-tooltip-in {
+  from { opacity: 0; transform: translate(-4px, -50%); }
+  to   { opacity: 1; transform: translate(0, -50%); }
+}
+.nav-tooltip-enter { animation: nav-tooltip-in 120ms ease-out both; transform: translateY(-50%); }
+@keyframes shimmer-text {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, #0f172a 0%, #059669 50%, #0f172a 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer-text 6s linear infinite;
+}

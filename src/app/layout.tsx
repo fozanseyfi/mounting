@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { Footer } from '@/components/shared/footer';
 import { ToastProvider } from '@/components/ui/toast';
 import { ConfirmRoot } from '@/components/ui/confirm';
 
@@ -17,9 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="tr">
       <body className={inter.className}>
         <ToastProvider>
-          <div className="flex min-h-screen bg-slate-50">
+          <div className="min-h-screen bg-slate-50">
             <Sidebar />
-            <div className="flex-1 flex flex-col min-w-0">{children}</div>
+            {/* Üst bar fixed (h-14); desktop'ta içerik sidebar genişliği kadar kayar */}
+            <div className="flex min-h-screen min-w-0 flex-col pt-14 sidebar-aware">
+              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+              <Footer />
+            </div>
           </div>
           <ConfirmRoot />
         </ToastProvider>

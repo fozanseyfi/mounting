@@ -1,21 +1,24 @@
-'use client';
+"use client";
 
 import {
-  Sun,
-  FileSpreadsheet,
+  Sparkles,
+  FolderKanban,
   LineChart,
   Wrench,
+  Trophy,
   ExternalLink,
   Boxes,
   ArrowRight,
-  FolderKanban,
-  Trophy,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type Tone = 'amber' | 'emerald' | 'blue' | 'rose' | 'purple';
+// ▼▼▼ BU PROJENİN KEY'İ ▼▼▼
+const CURRENT_KEY = "solar-bom";
+// ▲▲▲ Diğer her şey aynen kalır ▲▲▲
 
-interface Platform {
+type Tone = "amber" | "emerald" | "violet" | "blue" | "rose";
+
+type Platform = {
   key: string;
   title: string;
   tagline: string;
@@ -23,150 +26,147 @@ interface Platform {
   icon: React.ComponentType<{ className?: string }>;
   tone: Tone;
   href: string | null;
-}
+};
 
-/**
- * ÖNEMLİ: Bu projenin kendi kartı listede YOK ("Solar BOM").
- * Kullanıcı zaten burada — kendini listelemek mantıksız.
- */
-const PLATFORMS: Platform[] = [
+const ALL_PLATFORMS: Platform[] = [
   {
-    key: 'proje-yonetim',
-    title: 'Proje Yönetim Platformu',
-    tagline: 'Çoklu proje, ekip & ilerleme takibi',
+    key: "solar-bom",
+    title: "Solar BOM · Konstrüksiyon",
+    tagline: "Çelik tonaj & maliyet hesabı",
     description:
-      'GES/RES projeleri için planlama, baseline, günlük gerçekleşme, puantaj, SPI/CPI ve S-eğrisi. ' +
-      'Saha mühendisi günlük 5 dakikada gerçekleşmeyi tamamlar; PM tek bakışta projenin durumunu görür.',
-    icon: FolderKanban,
-    tone: 'purple',
+      "Solar GES sehpa konstrüksiyonu için profil bazlı sac açılımı, birim ağırlık, galvaniz ve bağlantı elemanı tonajı. Excel & PDF BOM raporları.",
+    icon: Boxes,
+    tone: "emerald",
     href: null,
   },
   {
-    key: 'karar-destek',
-    title: 'Satınalma Karar Destek',
-    tagline: 'Çoklu kriterli tedarik kararı',
+    key: "karar-destek",
+    title: "Satınalma Karar Destek",
+    tagline: "Çoklu kriterli skor & karar",
     description:
-      'GES/RES projeleri için 10 metrikli ağırlıklı skor algoritması. Şablon klonu, revize takibi, ' +
-      'PDF/Excel çıktı. Taşeron, malzeme ve hizmet tekliflerini tek panelden değerlendir.',
+      "GES & RES projelerinde tedarik kararını veriyle ver: 10 metrikli ağırlıklı skor, revize karşılaştırma, anomali tespiti, PDF & Excel raporlar.",
     icon: Trophy,
-    tone: 'amber',
+    tone: "amber",
+    href: "https://karardestek.fozanseyfi.com",
+  },
+  {
+    key: "solar-teklif",
+    title: "Solar Teklif Platformu",
+    tagline: "EPC fiyatlandırma & cash flow",
+    description:
+      "Solar EPC projeleri için fiyatlandırma, akıllı marj hesabı ve nakit akışı yönetimi. Hazır şablonlar, PDF & Excel çıktıları ile teklif analizlerinizi doğru bir biçimde yapıp doğru teklifin hazırlanmasını sağlayabilirsiniz.",
+    icon: Sparkles,
+    tone: "emerald",
+    href: "https://teklif.fozanseyfi.com",
+  },
+  {
+    key: "proje-yonetim",
+    title: "Proje Yönetim Platformu",
+    tagline: "Çoklu proje, ekip & ilerleme",
+    description:
+      "Birden fazla projeyi tek panelde yönet: milestone takibi, görev atama, ilerleme yüzdeleri ve bütçe izleme. Ekip içi şeffaflık, geç kalan iş yok.",
+    icon: FolderKanban,
+    tone: "violet",
     href: null,
   },
   {
-    key: 'teklif-platformu',
-    title: 'Teklif Platformu',
-    tagline: 'Teklif yönetimi & takibi',
+    key: "fizibilite",
+    title: "Solar Fizibilite Platformu",
+    tagline: "Yatırım & geri ödeme analizi",
     description:
-      'Tüm teklifleri tek panelden topla, durum ve revizyonlarını izle. Müşteri, kalem ve fiyat geçmişi ' +
-      'tek yerde — kim ne teklif vermiş, hangi aşamada, anında gör.',
-    icon: FileSpreadsheet,
-    tone: 'emerald',
-    href: null,
-  },
-  {
-    key: 'fizibilite',
-    title: 'Solar Fizibilite Platformu',
-    tagline: 'Yatırım & geri ödeme analizi',
-    description:
-      'Solar yatırım kararları için geri ödeme süresi, IRR ve NPV hesaplamaları. Senaryo karşılaştırması ' +
-      've risk değerlendirme — yatırımcıya gitmeden önce sayıları gör.',
+      "Solar yatırım kararları için geri ödeme süresi, IRR ve NPV hesaplamaları. Senaryo karşılaştırması ve risk değerlendirme — yatırımcıya gitmeden önce sayıları gör.",
     icon: LineChart,
-    tone: 'blue',
+    tone: "blue",
     href: null,
   },
   {
-    key: 'ges-muhendislik',
-    title: 'GES Mühendislik Platformu',
-    tagline: 'Tasarım, hesap & dokümantasyon',
+    key: "ges-muhendislik",
+    title: "GES Mühendislik Platformu",
+    tagline: "Tasarım, hesap & dokümantasyon",
     description:
-      'Tasarım hesabı, kayıp analizi, kablo & inverter seçimi. Tek hat şeması ve teknik dokümantasyon ' +
-      'üretimi — sahaya inmeden önce her şey hazır.',
+      "Tasarım hesabı, kayıp analizi, kablo & inverter seçimi. Tek hat şeması ve teknik dokümantasyon üretimi — sahaya inmeden önce her şey hazır.",
     icon: Wrench,
-    tone: 'rose',
+    tone: "rose",
     href: null,
   },
 ];
 
 const TONE_STYLES: Record<
   Tone,
-  { iconBg: string; iconText: string; hoverBorder: string; gradient: string; btnBg: string }
+  { iconBg: string; iconText: string; ring: string; hoverBorder: string; gradient: string }
 > = {
   amber: {
-    iconBg: 'bg-yellow/15',
-    iconText: 'text-yellow',
-    hoverBorder: 'hover:border-yellow/50',
-    gradient: 'from-yellow/8 via-white to-white',
-    btnBg: 'bg-yellow hover:brightness-110 text-white',
+    iconBg: "bg-yellow-100",
+    iconText: "text-yellow-700",
+    ring: "ring-yellow-200/60",
+    hoverBorder: "hover:border-yellow-300",
+    gradient: "from-yellow-50/60 via-white to-white",
   },
   emerald: {
-    iconBg: 'bg-brand/15',
-    iconText: 'text-brand',
-    hoverBorder: 'hover:border-brand/50',
-    gradient: 'from-brand/8 via-white to-white',
-    btnBg: 'bg-brand hover:brightness-110 text-white',
+    iconBg: "bg-emerald-100",
+    iconText: "text-emerald-700",
+    ring: "ring-emerald-200/60",
+    hoverBorder: "hover:border-emerald-300",
+    gradient: "from-emerald-50/60 via-white to-white",
+  },
+  violet: {
+    iconBg: "bg-violet-100",
+    iconText: "text-violet-700",
+    ring: "ring-violet-200/60",
+    hoverBorder: "hover:border-violet-300",
+    gradient: "from-violet-50/60 via-white to-white",
   },
   blue: {
-    iconBg: 'bg-blue/15',
-    iconText: 'text-blue',
-    hoverBorder: 'hover:border-blue/50',
-    gradient: 'from-blue/8 via-white to-white',
-    btnBg: 'bg-blue hover:brightness-110 text-white',
+    iconBg: "bg-blue-100",
+    iconText: "text-blue-700",
+    ring: "ring-blue-200/60",
+    hoverBorder: "hover:border-blue-300",
+    gradient: "from-blue-50/60 via-white to-white",
   },
   rose: {
-    iconBg: 'bg-red/15',
-    iconText: 'text-red',
-    hoverBorder: 'hover:border-red/50',
-    gradient: 'from-red/8 via-white to-white',
-    btnBg: 'bg-red hover:brightness-110 text-white',
-  },
-  purple: {
-    iconBg: 'bg-purple/15',
-    iconText: 'text-purple',
-    hoverBorder: 'hover:border-purple/50',
-    gradient: 'from-purple/8 via-white to-white',
-    btnBg: 'bg-purple hover:brightness-110 text-white',
+    iconBg: "bg-rose-100",
+    iconText: "text-rose-700",
+    ring: "ring-rose-200/60",
+    hoverBorder: "hover:border-rose-300",
+    gradient: "from-rose-50/60 via-white to-white",
   },
 };
 
 export default function PlatformsPage() {
+  const platforms = ALL_PLATFORMS.filter((p) => p.key !== CURRENT_KEY);
   return (
-    <main className="flex-1 p-6">
-      <div className="mx-auto max-w-5xl space-y-8">
-        {/* HERO */}
-        <div className="relative overflow-hidden rounded-2xl border border-yellow/30 bg-gradient-to-br from-yellow/10 via-white to-white p-7 md:p-10">
-          <div className="pointer-events-none absolute -top-24 -right-20 w-56 h-56 rounded-full bg-yellow/15 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 -left-16 w-72 h-72 rounded-full bg-yellow/8 blur-3xl" />
-          <div className="relative max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-yellow/40 bg-yellow/15 px-3 py-1 text-[11px] font-bold tracking-[0.18em] text-yellow uppercase">
-              <Boxes className="w-3 h-3" />
-              Diğer Platformlar
-            </div>
-            <h1 className="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-text leading-tight">
-              Geliştirdiğim diğer platformlara da göz atın
-            </h1>
-            <p className="mt-3 text-base leading-relaxed text-text2 md:text-[17px]">
-              Hepsi solar/enerji sektörüne yönelik, <strong className="text-text">bağımsız bir inisiyatifle</strong>{' '}
-              geliştirilmiş yardımcı araçlardır. "YAKINDA" rozetli platformlar için bildirim almak isterseniz
-              iletişime geçin.
-            </p>
+    <main className="flex-1 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto max-w-5xl space-y-8">
+      {/* Hero — emerald palet (proje renkleri) */}
+      <div className="relative overflow-hidden rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50/80 via-white to-white p-7 md:p-10">
+        <div className="pointer-events-none absolute -right-20 -top-24 size-56 rounded-full bg-emerald-100/60 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-16 size-72 rounded-full bg-emerald-50 blur-3xl" />
+        <div className="relative max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+            <Boxes className="size-3" />
+            Diğer Platformlar
           </div>
-        </div>
-
-        {/* PLATFORMS GRID */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {PLATFORMS.map((p) => (
-            <PlatformCard key={p.key} platform={p} />
-          ))}
-        </div>
-
-        {/* Bottom hint */}
-        <div className="rounded-xl border border-slate-200 bg-bg2 px-5 py-4 text-center">
-          <p className="text-sm text-text2">
-            Önerilerinizi <a className="text-brand font-semibold hover:underline" href="/contact">İletişim</a>{' '}
-            sayfasından paylaşabilirsiniz — hangi araca ihtiyacınız varsa öncelik orada olur.
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+            Geliştirdiğim diğer platformlara da göz atın
+          </h1>
+          <p className="mt-3 text-base leading-relaxed text-slate-600 md:text-lg">
+            Mesleki tecrübelerimle kendi iş süreçlerimi dijitalleştirmek için
+            geliştirdiğim bu platformları,{" "}
+            <strong className="text-slate-900">aktif birer araç olarak
+            herkesin kullanımına ücretsiz açıyorum</strong>. Sektörel fayda
+            sağlaması adına dilediğiniz gibi faydalanabilirsiniz. Platformlara
+            eklemek, düzenlemek veya geliştirmek istediğiniz hususları
+            iletmeniz benim için çok değerli olacaktır.
           </p>
         </div>
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {platforms.map((p) => (
+          <PlatformCard key={p.key} platform={p} />
+        ))}
+      </div>
+    </div>
     </main>
   );
 }
@@ -179,33 +179,46 @@ function PlatformCard({ platform }: { platform: Platform }) {
   return (
     <article
       className={cn(
-        'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br p-6 shadow-soft transition-all',
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br p-6 shadow-sm transition-all",
         tone.gradient,
-        isLive ? `hover:shadow-medium hover:-translate-y-0.5 ${tone.hoverBorder}` : 'opacity-95'
+        isLive ? `hover:shadow-md ${tone.hoverBorder}` : "opacity-95",
       )}
     >
       <div className="flex items-start justify-between">
-        <div className={cn('flex w-12 h-12 items-center justify-center rounded-xl', tone.iconBg, tone.iconText)}>
-          <Icon className="w-6 h-6" />
+        <div
+          className={cn(
+            "flex size-12 items-center justify-center rounded-xl",
+            tone.iconBg,
+            tone.iconText,
+          )}
+        >
+          <Icon className="size-6" />
         </div>
         {isLive ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-green/30 bg-green/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-green">
-            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse-soft" />
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
             CANLIDA
           </span>
         ) : (
-          <span className="rounded-full border border-slate-200 bg-bg2 px-2.5 py-1 text-[10px] font-bold tracking-wider text-text3">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
             YAKINDA
           </span>
         )}
       </div>
 
       <div className="mt-4 flex-1">
-        <div className={cn('text-[11px] font-bold tracking-[0.14em] uppercase', tone.iconText)}>{platform.tagline}</div>
-        <h3 className="mt-1 font-display text-lg md:text-xl font-extrabold tracking-tight text-text">
+        <div
+          className={cn(
+            "text-[11px] font-semibold uppercase tracking-[0.14em]",
+            tone.iconText,
+          )}
+        >
+          {platform.tagline}
+        </div>
+        <h3 className="mt-1 text-lg font-semibold tracking-tight text-slate-900 md:text-xl">
           {platform.title}
         </h3>
-        <p className="mt-2 text-[13.5px] leading-relaxed text-text2">{platform.description}</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate-700">{platform.description}</p>
       </div>
 
       <div className="mt-5">
@@ -214,19 +227,19 @@ function PlatformCard({ platform }: { platform: Platform }) {
             href={platform.href!}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn('inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold shadow-sm transition-all', tone.btnBg)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             İncele
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="size-3.5" />
           </a>
         ) : (
           <button
             type="button"
             disabled
-            className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-slate-200 bg-bg2 px-4 py-2 text-sm font-semibold text-text3"
+            className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-400"
           >
             Yakında
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="size-3.5" />
           </button>
         )}
       </div>

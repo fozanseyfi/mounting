@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
+import { logAudit } from '@/lib/local-admin';
 
 const STEPS = [
   { id: 1, label: 'Proje Bilgisi', icon: Building2 },
@@ -40,19 +41,25 @@ export default function NewProjectPage() {
       return;
     }
     setBusy(true);
-    const res = await fetch('/api/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, status: 'DRAFT' }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      toast('Proje oluşturuldu — şimdi masa tipi ekleyin', 'success');
-      router.push(`/projects/${data.id}`);
-    } else {
-      setBusy(false);
-      toast('Proje oluşturulamadı', 'error');
+    try {
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, status: 'DRAFT' }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        logAudit('project.create', 'Proje oluşturuldu', 'project', form.name.trim());
+        toast('Proje oluşturuldu — şimdi masa tipi ekleyin', 'success');
+        router.push(`/projects/${data.id}`);
+        return;
+      }
+      const err = await res.json().catch(() => null);
+      toast(err?.error || 'Proje oluşturulamadı', 'error');
+    } catch {
+      toast('Sunucuya ulaşılamadı — proje oluşturulamadı', 'error');
     }
+    setBusy(false);
   }
 
   function next() {
