@@ -1,10 +1,13 @@
-import { prisma, safeQuery } from '@/lib/db';
+import { prisma, safeQuery, isDbConfigured } from '@/lib/db';
 import { DbWarning } from '@/components/layout/DbWarning';
+import { LocalView } from '@/components/local/LocalView';
 import { ShareLinksClient } from './client';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SharePage() {
+  if (!isDbConfigured) return <LocalView kind="share" />;
+
   const { data: projects, dbError } = await safeQuery(
     () =>
       prisma.project.findMany({

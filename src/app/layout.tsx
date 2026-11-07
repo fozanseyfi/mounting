@@ -5,6 +5,8 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Footer } from '@/components/shared/footer';
 import { ToastProvider } from '@/components/ui/toast';
 import { ConfirmRoot } from '@/components/ui/confirm';
+import { LocalApiShim } from '@/components/local/LocalApiShim';
+import { isDbConfigured } from '@/lib/db';
 
 const inter = Inter({ subsets: ['latin', 'latin-ext'] });
 
@@ -17,6 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       <body className={inter.className}>
+        {/* Veritabanı yoksa API çağrıları tarayıcıdaki yerel kayda yönlenir */}
+        <LocalApiShim enabled={!isDbConfigured} />
         <ToastProvider>
           <div className="min-h-screen bg-slate-50">
             <Sidebar />
