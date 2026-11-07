@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
-import { logAudit } from '@/lib/local-admin';
 
 const STEPS = [
   { id: 1, label: 'Proje Bilgisi', icon: Building2 },
@@ -49,7 +48,6 @@ export default function NewProjectPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        logAudit('project.create', 'Proje oluşturuldu', 'project', form.name.trim());
         toast('Proje oluşturuldu — şimdi masa tipi ekleyin', 'success');
         router.push(`/projects/${data.id}`);
         return;

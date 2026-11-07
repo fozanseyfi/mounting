@@ -16,13 +16,11 @@ import {
   Library,
   FileBarChart,
   Sun,
-  Users,
   MessageCircle,
   HelpCircle,
   Bell,
   Boxes,
   ChevronDown,
-  ScrollText,
   Share2,
   ChevronLeft,
   ChevronRight,
@@ -59,9 +57,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Yönetim',
     items: [
-      { href: '/users', icon: Users, label: 'Kullanıcılar' },
       { href: '/share', icon: Share2, label: 'Paylaşım Linkleri' },
-      { href: '/audit', icon: ScrollText, label: 'Aktivite Kayıtları' },
       { href: '/account', icon: UserCircle2, label: 'Profilim' },
       { href: '/notifications', icon: Bell, label: 'Bildirimler' },
     ],
