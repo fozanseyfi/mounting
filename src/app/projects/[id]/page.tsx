@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Settings, Weight, Zap, Boxes, FileText } from 'lucide-react';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 import { mapProject } from '@/lib/projectMapper';
 import { TopBar } from '@/components/layout/TopBar';
 import { Button } from '@/components/ui/button';
@@ -12,13 +13,13 @@ import { ProjectTabs } from '@/components/projects/ProjectTabs';
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const raw = await prisma.project.findUnique({
+  const { data: raw, dbError } = await safeQuery(() => prisma.project.findUnique({
     where: { id: params.id },
     include: {
       tableTypes: { include: { parts: true, fasteners: true } },
       pricing: true,
     },
-  });
+  }), null);
   if (!raw) notFound();
   const project = mapProject(raw);
   const status = PROJECT_STATUS[project.status as keyof typeof PROJECT_STATUS] || PROJECT_STATUS.DRAFT;
@@ -29,6 +30,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       <TopBar title={project.name} subtitle={project.customer ? `${project.customer}${project.location ? ' · ' + project.location : ''}` : 'Proje Detayı'} />
 
       <main className="flex-1 p-6 space-y-6">
+        <DbWarning show={dbError} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Link href="/projects" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-primary">

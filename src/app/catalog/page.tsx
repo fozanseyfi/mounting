@@ -2,12 +2,13 @@ import { Library, Search } from 'lucide-react';
 import { TopBar } from '@/components/layout/TopBar';
 import { Badge } from '@/components/ui/badge';
 import { DIN_CATALOG } from '@/lib/constants/din-catalog';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CatalogPage() {
-  const customs = await prisma.customFastenerLibrary.findMany({ orderBy: { createdAt: 'desc' } });
+  const { data: customs, dbError } = await safeQuery(() => prisma.customFastenerLibrary.findMany({ orderBy: { createdAt: 'desc' } }), []);
 
   const grouped = DIN_CATALOG.reduce<Record<string, typeof DIN_CATALOG>>((acc, c) => {
     if (!acc[c.code]) acc[c.code] = [];
@@ -19,6 +20,7 @@ export default async function CatalogPage() {
     <>
       <TopBar title="DIN Bağlantı Elemanı Kataloğu" subtitle="Yerleşik standart + Kullanıcı kütüphanesi" />
       <main className="flex-1 p-6 space-y-6">
+        <DbWarning show={dbError} />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatBox label="Katalog Kalemi" value={DIN_CATALOG.length} hint="DIN standart" />
           <StatBox label="Özel Kütüphane" value={customs.length} hint="Manuel ekleme" />

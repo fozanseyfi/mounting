@@ -4,19 +4,21 @@ import { PageHeader } from '@/components/layout/page-header';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SharePage() {
-  const projects = await prisma.project.findMany({
+  const { data: projects, dbError } = await safeQuery(() => prisma.project.findMany({
     orderBy: { updatedAt: 'desc' },
     take: 10,
-  });
+  }), []);
 
   return (
     <main className="flex-1 p-6">
+        <DbWarning show={dbError} />
       <PageHeader
         title="Public Paylaşım"
         description="Müşteriye/yatırımcıya read-only proje linki gönderin"

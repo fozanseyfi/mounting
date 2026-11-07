@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Plus, Layers, Weight, Zap, FolderKanban, TrendingUp, Activity, ArrowRight, Calendar } from 'lucide-react';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 import { mapProject } from '@/lib/projectMapper';
 import { TopBar } from '@/components/layout/TopBar';
 import { Button } from '@/components/ui/button';
@@ -13,13 +14,13 @@ import { PROJECT_STATUS } from '@/lib/constants/steel';
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const rawProjects = await prisma.project.findMany({
+  const { data: rawProjects, dbError } = await safeQuery(() => prisma.project.findMany({
     include: {
       tableTypes: { include: { parts: true, fasteners: true } },
       pricing: true,
     },
     orderBy: { updatedAt: 'desc' },
-  });
+  }), []);
   const projects = rawProjects.map(mapProject);
 
   const totalProjects = projects.length;
@@ -49,6 +50,7 @@ export default async function DashboardPage() {
       <TopBar title="Dashboard" subtitle="Solar GES konstrüksiyon projelerinin genel görünümü" />
 
       <main className="flex-1 p-6 space-y-6">
+        <DbWarning show={dbError} />
         {/* Hero / Welcome banner */}
         <div className="relative overflow-hidden rounded-2xl hero-gradient p-8 text-white shadow-lg">
           <div className="relative z-10 max-w-2xl">

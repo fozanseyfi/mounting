@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { FileBarChart, FileSpreadsheet, FileText, ArrowRight } from 'lucide-react';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 import { mapProject } from '@/lib/projectMapper';
 import { TopBar } from '@/components/layout/TopBar';
 import { Button } from '@/components/ui/button';
@@ -9,10 +10,10 @@ import { formatNumber, formatDate } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 
 export default async function ReportsPage() {
-  const rawProjects = await prisma.project.findMany({
+  const { data: rawProjects, dbError } = await safeQuery(() => prisma.project.findMany({
     include: { tableTypes: { include: { parts: true, fasteners: true } }, pricing: true },
     orderBy: { updatedAt: 'desc' },
-  });
+  }), []);
   const projects = rawProjects.map(mapProject);
 
   const totalTonnage = projects.reduce((s, p) => s + (p.totals?.grandTotal || 0), 0);
@@ -22,6 +23,7 @@ export default async function ReportsPage() {
     <>
       <TopBar title="Raporlar" subtitle="Tüm projelerin rapor çıktıları" />
       <main className="flex-1 p-6 space-y-6">
+        <DbWarning show={dbError} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Stat icon={FileBarChart} label="Toplam Proje" value={String(projects.length)} />
           <Stat icon={FileSpreadsheet} label="Toplam Tonaj" value={`${formatNumber(totalTonnage)} ton`} />

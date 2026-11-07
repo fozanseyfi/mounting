@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Plus, FolderKanban, Calendar, ArrowRight, Search, Filter } from 'lucide-react';
-import { prisma } from '@/lib/db';
+import { prisma, safeQuery } from '@/lib/db';
+import { DbWarning } from '@/components/layout/DbWarning';
 import { mapProject } from '@/lib/projectMapper';
 import { TopBar } from '@/components/layout/TopBar';
 import { Button } from '@/components/ui/button';
@@ -11,10 +12,10 @@ import { DeleteProjectButton } from '@/components/projects/DeleteProjectButton';
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-  const rawProjects = await prisma.project.findMany({
+  const { data: rawProjects, dbError } = await safeQuery(() => prisma.project.findMany({
     include: { tableTypes: { include: { parts: true, fasteners: true } }, pricing: true },
     orderBy: { updatedAt: 'desc' },
-  });
+  }), []);
   const projects = rawProjects.map(mapProject);
 
   return (
@@ -22,6 +23,7 @@ export default async function ProjectsPage() {
       <TopBar title="Projeler" subtitle={`Toplam ${projects.length} proje yönetiliyor`} />
 
       <main className="flex-1 p-6 space-y-6">
+        <DbWarning show={dbError} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 max-w-md bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
             <Search className="w-4 h-4 text-slate-400" />
