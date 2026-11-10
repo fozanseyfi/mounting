@@ -1,0 +1,86 @@
+/*
+ * Klasik görünüm (.ui-classic) — Fizibilite platformundaki temanın kopyası.
+ * Kurumsal rapor sadeliği: lacivert vurgu, az yuvarlak köşe, gölgesiz kutular,
+ * Excel benzeri tablolar. Profilim / İletişime Geç / Diğer Platformlar hariç
+ * tüm içerik sayfalarına ContentShell üzerinden uygulanır (sidebar + footer ortak şablonda kalır).
+ */
+
+.ui-classic {
+  --primary: 214 64% 33%;          /* lacivert #1f4e8c */
+  --primary-foreground: 0 0% 100%;
+  --ring: 214 64% 33%;
+  --accent: 214 20% 95%;
+  --accent-foreground: 214 56% 20%;
+  --radius: 4px;
+  --border: 214 16% 86%;
+  --input: 214 16% 80%;
+  --secondary: 214 20% 95%;
+  --muted: 214 20% 95%;
+
+  /* primary-* yardımcı sınıfları (tailwind) laciverte döner */
+  --p-base: 31 78 140;
+  --p-dark: 22 48 79;
+  --p-soft: 238 243 249;
+  --p-soft-foreground: 22 48 79;
+  --p-light: 79 127 196;
+  --p-50: 241 245 250;
+  --p-100: 223 231 241;
+  --p-200: 195 210 229;
+  --p-300: 159 179 207;
+  --p-400: 111 143 187;
+  --p-500: 79 127 196;
+  --p-600: 43 90 150;
+  --p-700: 31 78 140;
+  --p-800: 26 63 112;
+  --p-900: 22 48 79;
+
+  --brand-50: #f1f5fa; --brand-100: #dfe7f1; --brand-200: #c3d2e5; --brand-300: #9fb3cf;
+  --brand-400: #6f8fbb; --brand-500: #4f7fc4; --brand-600: #1f4e8c; --brand-700: #16304f; --brand-800: #122844;
+  --c-accent: #1f4e8c; --c-accent-hover: #16304f; --c-accent-soft: #f1f5fa;
+
+  font-variant-numeric: tabular-nums;
+  background: #f4f5f7;
+}
+
+/* Köşeler: az yuvarlak; gölge yok */
+.ui-classic .rounded-sm, .ui-classic .rounded, .ui-classic .rounded-md,
+.ui-classic .rounded-lg, .ui-classic .rounded-xl, .ui-classic .rounded-2xl, .ui-classic .rounded-3xl { border-radius: 4px; }
+.ui-classic .rounded-full:not([class*="h-1"]):not([class*="h-2"]):not([class*="size-"]):not([class*="w-"]) { border-radius: 3px; }
+.ui-classic .shadow, .ui-classic .shadow-xs, .ui-classic .shadow-sm, .ui-classic .shadow-md, .ui-classic .shadow-lg, .ui-classic .shadow-xl,
+.ui-classic .shadow-soft, .ui-classic .shadow-medium, .ui-classic .shadow-large,
+.ui-classic [class*="hover\:shadow"]:hover { box-shadow: none !important; }
+.ui-classic [class*="hover\:-translate-y"]:hover { transform: none !important; }
+
+/* Gradyanlar düz renge */
+.ui-classic .hero-gradient { background: #16304f; }
+.ui-classic .kpi-gradient-green, .ui-classic .kpi-gradient-blue,
+.ui-classic .kpi-gradient-orange, .ui-classic .kpi-gradient-purple { background: #16304f; }
+.ui-classic .bg-gradient-to-br, .ui-classic .bg-gradient-to-r, .ui-classic .bg-gradient-to-b { background-image: none; background-color: #f6f7f9; }
+.ui-classic .shimmer-text { background: none; -webkit-text-fill-color: #16304f; color: #16304f; animation: none; }
+
+/* Zümrüt yeşili vurgular → sakin lacivert (durum renkleri: success/amber/red korunur) */
+.ui-classic .text-emerald-300 { color: #9fb3cf; }
+.ui-classic .text-emerald-600, .ui-classic .text-emerald-700, .ui-classic .text-emerald-800 { color: #1f4e8c; }
+.ui-classic .bg-emerald-50 { background-color: #f1f5fa; }
+.ui-classic .bg-emerald-100 { background-color: #dfe7f1; }
+.ui-classic .bg-emerald-500, .ui-classic .bg-emerald-600 { background-color: #1f4e8c; }
+.ui-classic .border-emerald-100, .ui-classic .border-emerald-200 { border-color: #c3d2e5; }
+.ui-classic .from-brand\/8 { --tw-gradient-from: transparent; }
+
+/* Başlıklar: sade, lacivert */
+.ui-classic h1 { color: #16304f; letter-spacing: 0; }
+.ui-classic h2, .ui-classic h3 { letter-spacing: 0; }
+.ui-classic .font-display { font-family: inherit; }
+
+/* Animasyonlu girişleri kapat (sakin görünüm) */
+.ui-classic .animate-slide-up, .ui-classic [class*="animate-slide-up-delay"], .ui-classic .animate-fade-in, .ui-classic .animate-pulse-soft { animation: none; }
+
+/* Tablolar: Excel benzeri */
+.ui-classic table { border-collapse: collapse; border: 1px solid #b9c0ca; font-size: 13px; }
+.ui-classic table th, .ui-classic table td { border: 1px solid #d4d9e0; padding-top: 6px; padding-bottom: 6px; }
+.ui-classic table thead tr, .ui-classic table th { background: #e9edf2; color: #1d2733; font-weight: 700; }
+.ui-classic table tbody tr:hover td { background: #eef4fb; }
+.ui-classic table tfoot td { background: #f2f2f2; font-weight: 700; }
+
+/* Form alanları */
+.ui-classic input:not([type=checkbox]):not([type=radio]), .ui-classic select, .ui-classic textarea { border-radius: 3px; }

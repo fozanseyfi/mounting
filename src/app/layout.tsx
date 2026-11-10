@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import '@/styles/classic.css';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Footer } from '@/components/shared/footer';
+import { ContentShell } from '@/components/layout/ContentShell';
 import { ToastProvider } from '@/components/ui/toast';
 import { ConfirmRoot } from '@/components/ui/confirm';
 import { LocalApiShim } from '@/components/local/LocalApiShim';
@@ -26,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Sidebar />
             {/* Üst bar fixed (h-14); desktop'ta içerik sidebar genişliği kadar kayar */}
             <div className="flex min-h-screen min-w-0 flex-col pt-14 sidebar-aware">
-              <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+              <ContentShell>{children}</ContentShell>
               <Footer />
             </div>
           </div>

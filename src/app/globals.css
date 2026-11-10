@@ -24,6 +24,10 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 161 94% 30%;
+    /* primary-* tailwind renkleri (RGB üçlü) — varsayılan zümrüt; .ui-classic laciverte çevirir */
+    --p-base: 5 150 105; --p-dark: 4 120 87; --p-soft: 236 253 245; --p-soft-foreground: 4 120 87; --p-light: 76 175 80;
+    --p-50: 240 250 242; --p-100: 219 242 224; --p-200: 185 229 196; --p-300: 139 208 159; --p-400: 90 181 120;
+    --p-500: 76 175 80; --p-600: 45 125 70; --p-700: 31 94 51; --p-800: 26 72 40; --p-900: 22 59 34;
     --radius: 0.625rem;
 
     /* --- Extended tokens from sister project (proje-takip) — emerald brand --- */
