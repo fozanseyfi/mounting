@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sun, LogIn, Mail, User } from 'lucide-react';
+import { LogIn, Mail, User } from 'lucide-react';
+import { BrandMark } from '@/components/layout/BrandMark';
 import { readProfile, writeProfile } from '@/lib/local-profile';
 import { login } from '@/lib/session';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -40,9 +41,7 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center px-4 pb-16">
         <div className="w-full max-w-sm">
           <div className="mb-6 flex flex-col items-center text-center">
-            <div className="mb-3 flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-              <Sun className="size-6" />
-            </div>
+            <BrandMark className="mb-3 size-12" />
             <h1 className="text-xl font-semibold text-foreground">Solar BOM</h1>
             <p className="mt-1 text-sm text-muted-foreground">Konstrüksiyon tonaj hesabı platformuna giriş yapın</p>
           </div>

@@ -14,7 +14,6 @@ import {
   Plus,
   Library,
   FileBarChart,
-  Sun,
   MessageCircle,
   HelpCircle,
   Bell,
@@ -29,6 +28,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BrandMark } from '@/components/layout/BrandMark';
 import { readProfile, type LocalProfile } from '@/lib/local-profile';
 import { logout } from '@/lib/session';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -302,10 +302,8 @@ export function Sidebar() {
             aria-label="Dashboard'a git"
             className="flex min-w-0 items-center gap-2 rounded-lg transition-opacity hover:opacity-80"
           >
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <Sun className="size-4" />
-            </div>
-            <p className="shimmer-text truncate text-sm font-semibold text-foreground">Solar BOM</p>
+            <BrandMark className="size-8 shrink-0 rounded-[22%] ring-1 ring-black/5" />
+            <p className="truncate text-sm font-semibold text-foreground">Solar BOM</p>
           </Link>
         </div>
 
@@ -374,9 +372,7 @@ export function Sidebar() {
               collapsed ? 'lg:flex-none lg:gap-0' : 'flex-1'
             )}
           >
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <Sun className="size-5" />
-            </div>
+            <BrandMark className="size-9 shrink-0 rounded-[22%] ring-1 ring-white/20" />
             <div className={cn('min-w-0 flex-1', collapsed ? 'lg:hidden' : '')}>
               <p className="truncate text-sm font-semibold tracking-tight text-white">Solar BOM</p>
             </div>
