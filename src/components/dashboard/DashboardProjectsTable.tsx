@@ -7,19 +7,19 @@ import type { Project } from '@/types';
 import { formatNumber, formatDate } from '@/lib/utils';
 import { PROJECT_STATUS } from '@/lib/constants/steel';
 import { useToast } from '@/components/ui/toast';
+import { useBomReport } from '@/components/report/BomReport';
 
 /** Dashboard proje listesi: her proje tek satır, satırda Rapor Al (PDF) ve Excel Al. */
 export function DashboardProjectsTable({ projects }: { projects: Project[] }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState<string | null>(null);
+  const report = useBomReport();
 
   async function run(p: Project, kind: 'pdf' | 'xlsx') {
     setBusy(`${p.id}:${kind}`);
     try {
       if (kind === 'pdf') {
-        const { downloadPDF } = await import('@/lib/export/pdf');
-        await downloadPDF(p);
-        toast('PDF raporu indirildi', 'success');
+        report.print(p);
       } else {
         const { downloadExcel } = await import('@/lib/export/excel');
         await downloadExcel(p);
@@ -114,6 +114,7 @@ export function DashboardProjectsTable({ projects }: { projects: Project[] }) {
           </tbody>
         </table>
       </div>
+      {report.printer}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import './globals.css';
 import '@/styles/classic.css';
 import '@/styles/dark.css';
+import '@/styles/report.css';
 import { AppChrome } from '@/components/layout/AppChrome';
 import { ToastProvider } from '@/components/ui/toast';
 import { ConfirmRoot } from '@/components/ui/confirm';
@@ -40,6 +41,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Gece modu ilk boyamadan önce; EN'de çeviri bitene kadar Türkçe metin görünmez */}
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+        {/* PDF rapor tipografisi (Fizibilite ile aynı) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className={inter.className}>
         <I18nRoot locale={locale} />

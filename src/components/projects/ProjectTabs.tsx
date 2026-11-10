@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Boxes, Wallet, Box, FileBarChart, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
+import { useBomReport } from '@/components/report/BomReport';
 import type { Project, TableType } from '@/types';
 import { TableTypesTab } from './TableTypesTab';
 import { CostTab } from './CostTab';
@@ -27,15 +28,14 @@ const TAB =
 function ExportButtons({ project }: { project: Project }) {
   const { toast } = useToast();
   const [busy, setBusy] = useState<'xlsx' | 'pdf' | null>(null);
+  const report = useBomReport();
   const ready = (project.totals?.grandTotal || 0) > 0;
 
   async function run(kind: 'xlsx' | 'pdf') {
     setBusy(kind);
     try {
       if (kind === 'pdf') {
-        const { downloadPDF } = await import('@/lib/export/pdf');
-        await downloadPDF(project);
-        toast('PDF raporu indirildi', 'success');
+        report.print(project);
       } else {
         const { downloadExcel } = await import('@/lib/export/excel');
         await downloadExcel(project);
@@ -65,6 +65,7 @@ function ExportButtons({ project }: { project: Project }) {
         {busy === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
         PDF Rapor Al
       </button>
+      {report.printer}
     </div>
   );
 }

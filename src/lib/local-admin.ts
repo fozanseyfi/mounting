@@ -8,11 +8,13 @@ export interface ShareLink {
   id: string;
   projectId: string;
   projectName: string;
-  token: string;
-  customerEmail?: string;
+  /** Proje verisini taşıyan tam link (/p#...) */
+  url: string;
   createdAt: string;
+  /** Son geçerlilik günü (YYYY-MM-DD) — null: süresiz */
   expiresAt: string | null;
-  revoked: boolean;
+  /** Fiyat ve maliyet bilgisi linke dahil mi */
+  includeCost: boolean;
 }
 
 export interface Notification {
@@ -49,36 +51,20 @@ export function uid(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
-function token(): string {
-  return Array.from({ length: 3 }, () => Math.random().toString(36).slice(2, 10)).join('');
-}
-
 /* ---------- Paylaşım linkleri ---------- */
 export function getShares(): ShareLink[] {
-  return read<ShareLink[]>(KEYS.shares, []);
+  // Eski biçimdeki (link taşımayan) kayıtlar atlanır
+  return read<ShareLink[]>(KEYS.shares, []).filter((l) => typeof l.url === 'string' && l.url.length > 0);
 }
 
-export function addShare(projectId: string, projectName: string, days: number | null, customerEmail?: string): ShareLink {
-  const link: ShareLink = {
-    id: uid(),
-    projectId,
-    projectName,
-    token: token(),
-    customerEmail: customerEmail || undefined,
-    createdAt: new Date().toISOString(),
-    expiresAt: days ? new Date(Date.now() + days * 864e5).toISOString() : null,
-    revoked: false,
-  };
-  write(KEYS.shares, [link, ...getShares()]);
-  return link;
+export function addShare(link: Omit<ShareLink, 'id' | 'createdAt'>): ShareLink {
+  const full: ShareLink = { ...link, id: uid(), createdAt: new Date().toISOString() };
+  write(KEYS.shares, [full, ...getShares()]);
+  return full;
 }
 
-export function revokeShare(id: string) {
-  const list = getShares();
-  write(
-    KEYS.shares,
-    list.map((l) => (l.id === id ? { ...l, revoked: true } : l))
-  );
+export function removeShare(id: string) {
+  write(KEYS.shares, getShares().filter((l) => l.id !== id));
 }
 
 /* ---------- Bildirimler ---------- */

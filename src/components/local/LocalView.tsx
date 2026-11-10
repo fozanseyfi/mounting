@@ -18,6 +18,7 @@ import { ProjectDetailView } from '@/components/views/ProjectDetailView';
 import { CatalogView } from '@/components/views/CatalogView';
 import { ShareLinksClient } from '@/app/share/client';
 import { DbWarning } from '@/components/layout/DbWarning';
+import { mapProject } from '@/lib/projectMapper';
 
 type Kind = 'dashboard' | 'projects' | 'reports' | 'project' | 'catalog' | 'share';
 
@@ -76,9 +77,7 @@ export function LocalView({ kind, id }: { kind: Kind; id?: string }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-6xl space-y-6">
             <DbWarning show={false} local />
-            <ShareLinksClient
-              projects={snap.projects.map((p) => ({ id: p.id, name: p.name, customer: p.customer }))}
-            />
+            <ShareLinksClient projects={snap.projects.map((p) => mapProject(asRows(p)))} />
           </div>
         </main>
       );

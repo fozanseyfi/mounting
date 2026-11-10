@@ -1,0 +1,71 @@
+/*
+ * PDF rapor şablonu — Fizibilite platformundaki kurumsal yönetici özeti ile aynı.
+ * Rapor body'ye portal edilir (#bom-report); yalnız yazdırırken görünür.
+ */
+#bom-report { display: none; }
+
+@media print {
+  @page { size: A4; margin: 12mm 11mm 14mm; }
+  body.bom-printing > *:not(#bom-report) { display: none !important; }
+  body.bom-printing #bom-report { display: block; }
+  body.bom-printing { background: #fff !important; font-size: 10.5px; color: #1A2436; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  html.dark body.bom-printing { color: #1A2436; }
+}
+
+/* Kurumsal palet: lacivert + gri */
+#bom-report { --navy: #1E3A6E; --navy-deep: #0E2A5E; --line: #D9E0EC; line-height: 1.5; color: #1A2436; }
+#bom-report * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* Kapak bandı — düz lacivert */
+#bom-report .r-cover { background: var(--navy-deep); color: #fff; padding: 24px 26px 20px; border-radius: 8px; margin-bottom: 18px; }
+#bom-report .r-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #8FA3C9; margin-bottom: 8px; }
+#bom-report .r-cover h1 { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 25px; letter-spacing: -.01em; line-height: 1.15; color: #fff; margin: 0; }
+#bom-report .r-cover .r-sub { color: #B7C4DE; font-size: 10.5px; margin-top: 4px; }
+#bom-report .r-cover .r-facts { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 13px; padding-top: 11px; border-top: 1px solid rgba(255,255,255,.22); }
+#bom-report .r-cover .r-fact { font-size: 9.5px; }
+#bom-report .r-cover .r-fact b { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; letter-spacing: .12em; text-transform: uppercase; color: #9FB0D0; font-weight: 400; margin-bottom: 2px; }
+#bom-report .r-cover .r-fact span { color: #fff; font-weight: 600; }
+#bom-report .r-cover .r-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22); }
+#bom-report .r-cover .r-stat .l { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; color: #9FB0D0; }
+#bom-report .r-cover .r-stat .v { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; color: #fff; margin-top: 3px; letter-spacing: -.02em; white-space: nowrap; }
+
+/* Numaralı bölüm başlıkları */
+#bom-report h2 { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px; color: var(--navy-deep); margin: 16px 0 8px; padding-bottom: 5px; border-bottom: 1px solid #C9D2E2; page-break-after: avoid; break-after: avoid; }
+#bom-report h2 .rn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8892A4; margin-right: 8px; }
+
+/* KPI kartları */
+#bom-report .r-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 6px 0; }
+#bom-report .r-kpi { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: #fff; }
+#bom-report .r-kpi .l { font-family: 'IBM Plex Mono', monospace; font-size: 7px; letter-spacing: .08em; text-transform: uppercase; color: #6A7488; margin-bottom: 3px; }
+#bom-report .r-kpi .v { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; color: var(--navy-deep); }
+
+/* Özet bandı */
+#bom-report .r-verdict { border-left: 3px solid var(--navy-deep); background: #F5F7FA; padding: 8px 12px; font-size: 10.5px; margin: 8px 0; border-radius: 0 4px 4px 0; font-weight: 600; color: #1A2436; }
+
+/* Tablolar — beyaz başlık + lacivert alt çizgi */
+#bom-report table { width: 100%; border-collapse: collapse; font-family: 'IBM Plex Mono', monospace; font-size: 8.2px; margin: 4px 0 8px; }
+#bom-report th { background: #fff; color: var(--navy-deep); font-weight: 700; padding: 5px 6px; text-align: right; font-family: 'IBM Plex Sans', sans-serif; border: none; border-bottom: 1.5px solid var(--navy-deep); white-space: nowrap; }
+#bom-report td { padding: 4px 6px; text-align: right; border-top: 1px solid #EAEEF4; white-space: nowrap; }
+#bom-report th.l, #bom-report td.l { text-align: left; }
+#bom-report tr.tot td { font-weight: 700; border-top: 2px solid var(--navy-deep); }
+#bom-report tr { page-break-inside: avoid; break-inside: avoid; }
+#bom-report .tsub { font-size: 8px; color: #6A7488; margin: 3px 0 6px; }
+
+/* Tip bölümleri */
+#bom-report .r-type { margin-bottom: 6px; }
+#bom-report .r-line { font-size: 9px; color: #4A5468; margin: -2px 0 6px; }
+#bom-report .r-cap { font-family: 'IBM Plex Mono', monospace; font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; color: #6A7488; margin: 8px 0 2px; }
+
+#bom-report .r-note { font-size: 8.4px; color: #556; line-height: 1.55; background: #F7F9FC; border-left: 3px solid #C6D2E6; padding: 8px 11px; border-radius: 0 6px 6px 0; margin: 6px 0; }
+#bom-report .pagebreak { page-break-before: always; break-before: page; }
+
+/* Alt bilgi */
+#bom-report .r-foot { margin-top: 16px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 8px; color: #8892A4; display: flex; justify-content: space-between; }
+#bom-report .r-foot b { color: var(--navy-deep); }
+
+/* Paylaşım linki sayfası (/p): rapor ekranda da görünür; araç çubuğu yazdırmada gizlenir */
+#bom-report.on-screen { display: block; }
+@media print {
+  .no-print { display: none !important; }
+  html, body { background: #fff !important; }
+}

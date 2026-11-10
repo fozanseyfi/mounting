@@ -15,6 +15,8 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || '/';
   const router = useRouter();
   const isLogin = pathname === '/login';
+  // Paylaşım linki sayfası herkese açık: kabuk yok, oturum gerekmez
+  const isPublic = pathname === '/p';
   const [out, setOut] = useState(false);
 
   useEffect(() => {
@@ -29,10 +31,10 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (out && !isLogin) router.replace('/login');
-  }, [out, isLogin, router]);
+    if (out && !isLogin && !isPublic) router.replace('/login');
+  }, [out, isLogin, isPublic, router]);
 
-  if (isLogin) return <>{children}</>;
+  if (isLogin || isPublic) return <>{children}</>;
   if (out) return null;
 
   return (
