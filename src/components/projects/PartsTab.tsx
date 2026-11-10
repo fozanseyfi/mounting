@@ -123,7 +123,7 @@ export function PartsTab({ projectId, tableTypeId, parts, setParts, onChange }: 
                       <Badge variant={empty ? 'warning' : 'outline'} className="font-mono">{p.code}</Badge>
                     </td>
                     <td className="px-3 py-2.5">
-                      <span className={`font-medium hover:text-primary inline-flex items-center gap-1.5 ${empty ? 'text-amber-800' : 'text-slate-900'}`}>
+                      <span className={`whitespace-nowrap font-medium hover:text-primary inline-flex items-center gap-1.5 ${empty ? 'text-amber-800' : 'text-slate-900'}`}>
                         {p.name}
                         <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400" />
                       </span>

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Edit2, Trash2, Layers, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Plus, Edit2, Trash2, Layers, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/toast';
 import { formatNumber } from '@/lib/utils';
+import { isPlaceholderPart } from '@/lib/constants/standard-parts';
 import type { Project, TableType } from '@/types';
 import { TableTypeFormDialog } from './TableTypeFormDialog';
 import { TableTypeDetail } from './TableTypeDetail';
@@ -15,13 +15,31 @@ interface Props {
   onChange: () => void;
 }
 
+/** Masa tipinin doluluk durumu: eksik kalemleri listeler */
+function typeStatus(tt: TableType): { ok: boolean; issues: string[] } {
+  const issues: string[] = [];
+  const empty = tt.parts.filter(isPlaceholderPart).length;
+  if (tt.parts.length === 0) issues.push('Parça yok');
+  else if (empty > 0) issues.push(`${empty} parça eksik`);
+  if (tt.fasteners.length === 0) issues.push('Bağlantı elemanı yok');
+  return { ok: issues.length === 0, issues };
+}
+
 export function TableTypesTab({ project, onChange }: Props) {
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState<TableType | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(project.tableTypes[0]?.id || null);
   const { toast } = useToast();
 
+  // Seçili tip silinirse / yeni tip eklenirse seçimi geçerli tut
+  useEffect(() => {
+    if (!project.tableTypes.some((t) => t.id === selectedId)) {
+      setSelectedId(project.tableTypes[project.tableTypes.length - 1]?.id || null);
+    }
+  }, [project.tableTypes, selectedId]);
+
   const selected = project.tableTypes.find((t) => t.id === selectedId) || null;
+  const doneCount = project.tableTypes.filter((t) => typeStatus(t).ok).length;
 
   async function handleDelete(id: string, name: string) {
     if (!confirm(`"${name}" masa tipini silmek istediğinize emin misiniz? Tüm parçaları ve bağlantı elemanları da silinir.`)) return;
@@ -35,97 +53,88 @@ export function TableTypesTab({ project, onChange }: Props) {
     }
   }
 
-  return (
-    <div className="space-y-4">
-      {/* Table type cards */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-            <Layers className="w-4 h-4 text-primary" />
-            Masa Tipleri
-          </h3>
-          <p className="text-xs text-slate-500 mt-0.5">Projenizde kaç farklı sehpa konfigürasyonu varsa her birini tip olarak ekleyin</p>
-        </div>
-        <Button onClick={() => { setEditing(null); setOpenForm(true); }}>
-          <Plus className="w-4 h-4" />
-          Masa Tipi Ekle
-        </Button>
-      </div>
+  const openNew = () => { setEditing(null); setOpenForm(true); };
 
-      {project.tableTypes.length === 0 ? (
-        <div className="bg-white border border-dashed border-slate-300 rounded-xl p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-3">
-            <Layers className="w-7 h-7 text-primary" />
+  if (project.tableTypes.length === 0) {
+    return (
+      <>
+        <div className="bg-white border border-dashed border-slate-300 rounded-xl p-10 text-center">
+          <div className="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-3">
+            <Layers className="w-6 h-6 text-primary" />
           </div>
           <h4 className="font-semibold text-slate-900">Henüz masa tipi yok</h4>
           <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
             Bir projede birden fazla masa tipi olabilir. Örn. Tip-1 (28 panel, 80 adet) + Tip-2 (32 panel, 20 adet).
           </p>
-          <Button className="mt-4" onClick={() => { setEditing(null); setOpenForm(true); }}>
+          <Button className="mt-4" onClick={openNew}>
             <Plus className="w-4 h-4" />
             İlk Masa Tipini Ekle
           </Button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <TableTypeFormDialog open={openForm} onOpenChange={setOpenForm} projectId={project.id} editing={editing} onSaved={() => { setOpenForm(false); onChange(); }} />
+      </>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)] items-start">
+      {/* ---------- Sol: masa tipi listesi (sabit) ---------- */}
+      <aside className="bg-white border border-slate-200 rounded-xl xl:sticky xl:top-[4.5rem] overflow-hidden">
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-slate-200 bg-slate-50">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-primary" /> Masa Tipleri
+            </p>
+            <p className="text-[11px] text-slate-500">{doneCount}/{project.tableTypes.length} tamamlandı</p>
+          </div>
+          <Button size="sm" onClick={openNew} title="Masa tipi ekle">
+            <Plus className="w-3.5 h-3.5" /> Ekle
+          </Button>
+        </div>
+
+        <ul className="flex xl:flex-col overflow-x-auto xl:overflow-visible xl:max-h-[calc(100vh-11rem)] xl:overflow-y-auto divide-x xl:divide-x-0 xl:divide-y divide-slate-100">
           {project.tableTypes.map((tt) => {
-            const isSelected = selectedId === tt.id;
-            const t = tt.totals;
+            const isSel = tt.id === selectedId;
+            const st = typeStatus(tt);
             return (
-              <div
-                key={tt.id}
-                className={`bg-white border rounded-xl p-4 shadow-sm cursor-pointer transition-all ${isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-slate-200 hover:border-primary/40'}`}
-                onClick={() => setSelectedId(tt.id)}
-              >
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-slate-900 truncate">{tt.name}</p>
-                    {tt.description && <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{tt.description}</p>}
+              <li key={tt.id} className="min-w-[200px] xl:min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedId(tt.id)}
+                  className={`w-full text-left px-3 py-2.5 border-l-[3px] transition-colors ${isSel ? 'border-primary bg-primary-50' : 'border-transparent hover:bg-slate-50'}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`truncate text-sm font-semibold ${isSel ? 'text-primary-dark' : 'text-slate-900'}`}>{tt.name}</span>
+                    {st.ok ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" aria-label="Tamamlandı" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 shrink-0 text-amber-500" aria-label="Eksik var" />
+                    )}
                   </div>
-                  <div className="flex gap-1 shrink-0">
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditing(tt); setOpenForm(true); }} title="Düzenle">
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleDelete(tt.id, tt.name); }} className="text-red-600 hover:bg-red-50 hover:text-red-700" title="Sil">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+                  <div className="mt-0.5 flex items-center justify-between gap-2 text-[11px] text-slate-500 tabular-nums">
+                    <span>{tt.tableCount} masa · {tt.panelsPerTable} panel</span>
+                    <span className="font-semibold text-slate-700">{formatNumber(tt.totals?.grandTotal || 0)} t</span>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <Mini label="Masa" value={String(tt.tableCount)} />
-                  <Mini label="Panel/Masa" value={String(tt.panelsPerTable)} />
-                  <Mini label="Parça" value={String(tt.parts.length)} />
-                </div>
-
-                <div className="border-t border-slate-100 pt-2.5 space-y-1">
-                  <KV label="Tek Masa" value={`${formatNumber(t?.totalWeightPerTable || 0)} kg`} />
-                  <KV label="Toplam Çelik" value={`${formatNumber(t?.grandTotal || 0)} ton`} bold />
-                  <KV label="Bu Tip Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MW`} />
-                </div>
-
-                <Button size="sm" variant={isSelected ? 'default' : 'soft'} className="w-full mt-3" onClick={(e) => { e.stopPropagation(); setSelectedId(tt.id); }}>
-                  {isSelected ? 'Düzenleniyor' : 'Aç'} <ChevronRight className="w-3.5 h-3.5" />
-                </Button>
-              </div>
+                  {!st.ok && <p className="mt-0.5 text-[11px] font-medium text-amber-700 truncate">{st.issues.join(' · ')}</p>}
+                </button>
+              </li>
             );
           })}
-        </div>
-      )}
+        </ul>
+      </aside>
 
-      {/* Selected type detail (parts + fasteners) */}
+      {/* ---------- Sağ: seçili tipin düzenleme alanı ---------- */}
       {selected && (
-        <div className="mt-6 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-            <div>
-              <p className="text-xs text-slate-500 uppercase font-semibold">Düzenlenen Masa Tipi</p>
-              <h4 className="text-lg font-bold text-slate-900">{selected.name}</h4>
-            </div>
-            <Badge variant="info">{selected.tableCount} masa · {selected.panelsPerTable} panel/masa</Badge>
+        <section className="bg-white border border-slate-200 rounded-xl min-w-0">
+          <SelectedHeader
+            tt={selected}
+            onEdit={() => { setEditing(selected); setOpenForm(true); }}
+            onDelete={() => handleDelete(selected.id, selected.name)}
+          />
+          <div className="p-4">
+            <TableTypeDetail key={selected.id} projectId={project.id} tableType={selected} onChange={onChange} />
           </div>
-
-          <TableTypeDetail projectId={project.id} tableType={selected} onChange={onChange} />
-        </div>
+        </section>
       )}
 
       <TableTypeFormDialog
@@ -139,20 +148,47 @@ export function TableTypesTab({ project, onChange }: Props) {
   );
 }
 
-function Mini({ label, value }: { label: string; value: string }) {
+/** Düzenlenen tipin başlığı: kaydırırken üstte sabit kalır */
+function SelectedHeader({ tt, onEdit, onDelete }: { tt: TableType; onEdit: () => void; onDelete: () => void }) {
+  const t = tt.totals;
+  const st = typeStatus(tt);
   return (
-    <div className="bg-slate-50 rounded-lg p-2 text-center">
-      <p className="text-[10px] text-slate-500 uppercase font-medium">{label}</p>
-      <p className="text-sm font-bold text-slate-900 tabular-nums">{value}</p>
+    <div className="sticky top-14 z-10 bg-white/95 backdrop-blur border-b border-slate-200 rounded-t-xl px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <div className="min-w-0 mr-auto">
+          <p className="text-[10px] text-slate-500 uppercase font-semibold tracking-wide">Düzenlenen masa tipi</p>
+          <div className="flex items-center gap-2">
+            <h4 className="text-base font-bold text-slate-900 truncate">{tt.name}</h4>
+            {st.ok ? (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+                <CheckCircle2 className="w-3 h-3" /> Tamam
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
+                <AlertCircle className="w-3 h-3" /> {st.issues.join(' · ')}
+              </span>
+            )}
+          </div>
+        </div>
+        <Stat label="Masa" value={String(tt.tableCount)} />
+        <Stat label="Panel/Masa" value={String(tt.panelsPerTable)} />
+        <Stat label="Tek Masa" value={`${formatNumber(t?.totalWeightPerTable || 0)} kg`} />
+        <Stat label="Toplam" value={`${formatNumber(t?.grandTotal || 0)} t`} strong />
+        <Stat label="Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MW`} />
+        <div className="flex gap-1">
+          <Button size="sm" variant="ghost" onClick={onEdit} title="Masa tipini düzenle"><Edit2 className="w-3.5 h-3.5" /></Button>
+          <Button size="sm" variant="ghost" onClick={onDelete} className="text-red-600 hover:bg-red-50 hover:text-red-700" title="Sil"><Trash2 className="w-3.5 h-3.5" /></Button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function KV({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+function Stat({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-xs text-slate-500">{label}</span>
-      <span className={`text-sm tabular-nums ${bold ? 'font-bold text-primary-dark' : 'font-medium text-slate-700'}`}>{value}</span>
+    <div className="leading-tight">
+      <p className="text-[10px] text-slate-500 uppercase font-medium">{label}</p>
+      <p className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>{value}</p>
     </div>
   );
 }

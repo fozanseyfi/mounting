@@ -90,7 +90,7 @@ export function LocalView({ kind, id }: { kind: Kind; id?: string }) {
               <FolderX className="mx-auto mb-3 size-8 text-muted-foreground" />
               <h2 className="text-lg font-semibold">Proje bulunamadı</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Bu proje bu tarayıcıda kayıtlı değil. Yerel modda projeler sadece oluşturuldukları tarayıcıda görünür.
+                Bu proje bulunamadı veya silinmiş olabilir.
               </p>
               <Link
                 href="/projects"

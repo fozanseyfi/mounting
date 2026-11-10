@@ -27,7 +27,7 @@ export function ProjectDetailView({
     <>
       <TopBar title={project.name} subtitle={project.customer ? `${project.customer}${project.location ? ' · ' + project.location : ''}` : 'Proje Detayı'} />
 
-      <main className="flex-1 p-6 space-y-6">
+      <main className="flex-1 space-y-4 p-4 lg:px-6 lg:py-5">
         <DbWarning show={dbError} local={localMode} />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export function ProjectDetailView({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <SnapshotCard label="Masa Tipi" value={`${project.tableTypes.length} tip`} sub={`Toplam ${t?.totalTables || 0} masa`} icon={<Boxes className="w-5 h-5" />} color="kpi-gradient-green" />
           <SnapshotCard label="Toplam Tonaj" value={`${formatNumber(t?.grandTotal || 0)} ton`} sub="Galvaniz + bağlantı dahil" icon={<Weight className="w-5 h-5" />} color="kpi-gradient-blue" />
           <SnapshotCard label="Kurulu Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MW`} sub={`${formatNumber(t?.totalPanels || 0, 0)} panel`} icon={<Zap className="w-5 h-5" />} color="kpi-gradient-orange" />
@@ -58,15 +58,13 @@ export function ProjectDetailView({
 
 function SnapshotCard({ label, value, sub, icon, color }: { label: string; value: string; sub: string; icon: React.ReactNode; color: string }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg text-white flex items-center justify-center ${color}`}>{icon}</div>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs text-slate-500 uppercase font-medium">{label}</p>
-          <p className="text-lg font-bold text-slate-900 tabular-nums leading-tight truncate">{value}</p>
-        </div>
+    <div className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 shadow-sm flex items-center gap-3">
+      <div className={`w-8 h-8 shrink-0 rounded-lg text-white flex items-center justify-center [&_svg]:w-4 [&_svg]:h-4 ${color}`}>{icon}</div>
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="text-[10px] text-slate-500 uppercase font-medium tracking-wide">{label}</p>
+        <p className="text-base font-bold text-slate-900 tabular-nums truncate">{value}</p>
+        <p className="text-[11px] text-slate-500 truncate">{sub}</p>
       </div>
-      <p className="text-xs text-slate-500 mt-2">{sub}</p>
     </div>
   );
 }
