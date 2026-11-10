@@ -49,9 +49,10 @@ export function DashboardProjectsTable({ projects }: { projects: Project[] }) {
             <tr className="bg-secondary/50 text-left text-xs text-muted-foreground">
               <th className="px-5 py-2.5 font-medium">Proje</th>
               <th className="px-3 py-2.5 font-medium">Durum</th>
-              <th className="hidden px-3 py-2.5 text-right font-medium md:table-cell">Kurulu Güç</th>
-              <th className="px-3 py-2.5 text-right font-medium">Tonaj</th>
-              <th className="hidden px-3 py-2.5 text-right font-medium sm:table-cell">Ton / MWp</th>
+              <th className="hidden px-3 py-2.5 text-right font-medium md:table-cell">Toplam Güç</th>
+              <th className="px-3 py-2.5 text-right font-medium">Toplam Tonaj</th>
+              <th className="hidden px-3 py-2.5 text-right font-medium sm:table-cell">kg / MWp</th>
+              <th className="hidden px-3 py-2.5 text-right font-medium sm:table-cell">USD / MWp</th>
               <th className="hidden px-3 py-2.5 text-right font-medium lg:table-cell">Güncellendi</th>
               <th className="px-5 py-2.5 text-right font-medium">Rapor</th>
             </tr>
@@ -77,8 +78,11 @@ export function DashboardProjectsTable({ projects }: { projects: Project[] }) {
                     <span className={`inline-flex rounded border px-1.5 py-0.5 text-[11px] font-semibold ${st.color}`}>{st.label}</span>
                   </td>
                   <td className="hidden px-3 py-2.5 text-right tabular-nums md:table-cell">{formatNumber(t?.totalPowerMW || 0)} MWp</td>
-                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">{formatNumber(t?.grandTotal || 0)} t</td>
-                  <td className="hidden px-3 py-2.5 text-right tabular-nums sm:table-cell">{formatNumber((t?.kgPerMW || 0) / 1000, 2)}</td>
+                  <td className="px-3 py-2.5 text-right font-semibold tabular-nums">{formatNumber(t?.grandTotal || 0)} ton</td>
+                  <td className="hidden px-3 py-2.5 text-right tabular-nums sm:table-cell">{formatNumber(t?.kgPerMW || 0, 0)}</td>
+                  <td className="hidden px-3 py-2.5 text-right tabular-nums sm:table-cell">
+                    {p.cost && p.cost.totalCost > 0 ? formatNumber(p.cost.costPerMW, 0) : '—'}
+                  </td>
                   <td className="hidden px-3 py-2.5 text-right text-xs text-muted-foreground lg:table-cell">{formatDate(p.updatedAt)}</td>
                   <td className="px-5 py-2 text-right">
                     <div className="inline-flex gap-1.5">

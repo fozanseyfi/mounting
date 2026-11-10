@@ -129,7 +129,7 @@
  "Henüz veri yok": "No data yet",
  "Toplam Proje": "Total Projects",
  "Toplam Tonaj": "Total Tonnage",
- "Toplam Güç": "Total Capacity",
+ "Toplam Güç": "Total Power",
  "Malzeme Dağılımı": "Material Breakdown",
  "Sac (Çelik)": "Sheet (Steel)",
  "Galvaniz Kaplama": "Galvanizing",
@@ -967,5 +967,6 @@
  "Güç (MWp)": "Power (MWp)",
  "Tek panel gücü — toplam MWp hesaplaması bu değerden yapılır": "Single panel power — total MWp is calculated from this value",
  "Verimlilik metriği Ton / MWp — sektör ortalaması 15-25 Ton / MWp arasıdır.": "Efficiency metric Ton / MWp — the industry average is 15-25 Ton / MWp.",
- "\"Maliyet\" sekmesinde birim fiyatları girersiniz (tüm birimler USD): Sac fiyatı (USD/kg), galvaniz kaplama (USD/kg), büküm + işçilik (USD/kg çelik), bağlantı elemanları (USD/kg), nakliye (sabit USD), diğer giderler (sabit USD). Toplam maliyet ve USD / MWp anlık hesaplanır.": "In the \"Cost\" tab you enter unit prices (all in USD): sheet price (USD/kg), galvanizing (USD/kg), bending + labor (USD/kg steel), fasteners (USD/kg), transport (fixed USD), other costs (fixed USD). Total cost and USD / MWp are calculated instantly."
+ "\"Maliyet\" sekmesinde birim fiyatları girersiniz (tüm birimler USD): Sac fiyatı (USD/kg), galvaniz kaplama (USD/kg), büküm + işçilik (USD/kg çelik), bağlantı elemanları (USD/kg), nakliye (sabit USD), diğer giderler (sabit USD). Toplam maliyet ve USD / MWp anlık hesaplanır.": "In the \"Cost\" tab you enter unit prices (all in USD): sheet price (USD/kg), galvanizing (USD/kg), bending + labor (USD/kg steel), fasteners (USD/kg), transport (fixed USD), other costs (fixed USD). Total cost and USD / MWp are calculated instantly.",
+ "Aramaya uyan proje bulunamadı": "No projects match your search"
 }

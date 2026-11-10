@@ -1,8 +1,10 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, FolderKanban, Calendar, ArrowRight, Search, Filter } from 'lucide-react';
+import { Plus, FolderKanban, Calendar, ArrowRight, Search } from 'lucide-react';
 import { DbWarning } from '@/components/layout/DbWarning';
 import { mapProject } from '@/lib/projectMapper';
-import { TopBar } from '@/components/layout/TopBar';
 import { Button } from '@/components/ui/button';
 import { formatNumber, formatDate } from '@/lib/utils';
 import { PROJECT_STATUS } from '@/lib/constants/steel';
@@ -17,34 +19,45 @@ export function ProjectsView({
   dbError?: boolean;
   localMode?: boolean;
 }) {
-  const projects = rawProjects.map(mapProject);
+  const all = rawProjects.map(mapProject);
+  const [q, setQ] = useState('');
+  const needle = q.trim().toLocaleLowerCase('tr');
+  const projects = needle
+    ? all.filter((p) => [p.name, p.customer, p.location].some((x) => (x || '').toLocaleLowerCase('tr').includes(needle)))
+    : all;
 
   return (
     <>
-      <TopBar title="Projeler" subtitle={`Toplam ${projects.length} proje yönetiliyor`} />
-
-      <main className="flex-1 p-6 space-y-6">
+      <main className="flex-1 space-y-4 p-4 sm:p-6">
         <DbWarning show={dbError} local={localMode} />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-1 max-w-md bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
-            <Search className="w-4 h-4 text-slate-400" />
-            <input placeholder="Proje ara..." className="bg-transparent outline-none text-sm flex-1" />
+        {/* Başlık + arama + yeni proje: hepsi en üstte tek satır */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="mr-auto">
+            <h1 className="text-2xl font-semibold tracking-tight">Projeler</h1>
+            <p className="mt-0.5 text-sm text-muted-foreground">Toplam {all.length} proje yönetiliyor</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="default">
-              <Filter className="w-4 h-4" />
-              Filtre
-            </Button>
-            <Button asChild>
+          <div className="flex w-full items-center gap-2 sm:w-auto">
+            <label className="flex h-9 flex-1 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 sm:w-72 sm:flex-none">
+              <Search className="h-4 w-4 shrink-0 text-slate-400" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Proje ara..."
+                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm outline-none"
+              />
+            </label>
+            <Button asChild size="sm" className="h-9">
               <Link href="/projects/new">
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 Yeni Proje
               </Link>
             </Button>
           </div>
         </div>
 
-        {projects.length === 0 ? (
+        {all.length > 0 && projects.length === 0 ? (
+          <p className="rounded-md border bg-white py-10 text-center text-sm text-slate-500">Aramaya uyan proje bulunamadı</p>
+        ) : projects.length === 0 ? (
           <div className="bg-white border border-dashed border-slate-300 rounded-2xl p-16 text-center">
             <div className="w-20 h-20 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-4">
               <FolderKanban className="w-9 h-9 text-primary" />
