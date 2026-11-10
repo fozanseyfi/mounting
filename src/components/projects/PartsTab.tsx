@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { Trash2, AlertCircle } from 'lucide-react';
 import type { SehpaPart } from '@/types';
 import { PROFILE_TYPES } from '@/types';
 import { formatNumber } from '@/lib/utils';
@@ -16,9 +15,11 @@ interface Props {
   parts: SehpaPart[];
   setParts: React.Dispatch<React.SetStateAction<SehpaPart[]>>;
   onChange: () => void;
+  /** Değiştikçe yeni parça formu açılır (Ekle düğmesi sekme satırında) */
+  addSignal?: number;
 }
 
-export function PartsTab({ projectId, tableTypeId, parts, setParts, onChange }: Props) {
+export function PartsTab({ projectId, tableTypeId, parts, setParts, onChange, addSignal = 0 }: Props) {
   const [openForm, setOpenForm] = useState(false);
   const [editingPart, setEditingPart] = useState<SehpaPart | null>(null);
   const { toast } = useToast();
@@ -40,23 +41,17 @@ export function PartsTab({ projectId, tableTypeId, parts, setParts, onChange }: 
     setOpenForm(true);
   }
 
-  function handleAdd() {
-    setEditingPart(null);
-    setOpenForm(true);
-  }
+  useEffect(() => {
+    if (addSignal > 0) {
+      setEditingPart(null);
+      setOpenForm(true);
+    }
+  }, [addSignal]);
 
   const profileLabel = (t: string) => PROFILE_TYPES.find((p) => p.value === t)?.label || t;
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-slate-500">Satıra tıklayınca parça düzenleme açılır — sac açılımı ve ağırlık otomatik hesaplanır</p>
-        <Button size="sm" onClick={handleAdd}>
-          <Plus className="w-3.5 h-3.5" />
-          Parça Ekle
-        </Button>
-      </div>
-
       {parts.some(isPlaceholderPart) && (
         <div className="bg-amber-50 border border-amber-200 rounded-md px-3 py-1.5 flex items-center gap-2 text-xs text-amber-800">
           <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -87,7 +82,7 @@ export function PartsTab({ projectId, tableTypeId, parts, setParts, onChange }: 
               {parts.length === 0 && (
                 <tr>
                   <td colSpan={12} className="text-center py-8 text-slate-500 text-sm">
-                    Henüz parça eklenmedi — &quot;Parça Ekle&quot; ile başlayın
+                    Henüz parça eklenmedi
                   </td>
                 </tr>
               )}

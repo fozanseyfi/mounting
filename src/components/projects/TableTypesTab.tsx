@@ -126,13 +126,19 @@ export function TableTypesTab({ project, onChange }: Props) {
       {/* ---------- Sağ: seçili tipin düzenleme alanı ---------- */}
       {selected && (
         <section className="bg-white border border-slate-200 rounded-xl min-w-0">
-          <SelectedHeader
-            tt={selected}
-            onEdit={() => { setEditing(selected); setOpenForm(true); }}
-            onDelete={() => handleDelete(selected.id, selected.name)}
-          />
           <div className="p-4">
-            <TableTypeDetail key={selected.id} projectId={project.id} tableType={selected} onChange={onChange} />
+            <TableTypeDetail
+              key={selected.id}
+              projectId={project.id}
+              tableType={selected}
+              onChange={onChange}
+              actions={
+                <>
+                  <Button size="sm" variant="ghost" onClick={() => { setEditing(selected); setOpenForm(true); }} title="Masa tipini düzenle"><Edit2 className="w-3.5 h-3.5" /></Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleDelete(selected.id, selected.name)} className="text-red-600 hover:bg-red-50 hover:text-red-700" title="Sil"><Trash2 className="w-3.5 h-3.5" /></Button>
+                </>
+              }
+            />
           </div>
         </section>
       )}
@@ -144,51 +150,6 @@ export function TableTypesTab({ project, onChange }: Props) {
         editing={editing}
         onSaved={() => { setOpenForm(false); onChange(); }}
       />
-    </div>
-  );
-}
-
-/** Düzenlenen tipin başlığı: kaydırırken üstte sabit kalır */
-function SelectedHeader({ tt, onEdit, onDelete }: { tt: TableType; onEdit: () => void; onDelete: () => void }) {
-  const t = tt.totals;
-  const st = typeStatus(tt);
-  return (
-    <div className="sticky top-14 z-10 bg-white/95 backdrop-blur border-b border-slate-200 rounded-t-xl px-4 py-2.5">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-        <div className="min-w-0 mr-auto">
-          <p className="text-[10px] text-slate-500 uppercase font-semibold tracking-wide">Düzenlenen masa tipi</p>
-          <div className="flex items-center gap-2">
-            <h4 className="text-base font-bold text-slate-900 truncate">{tt.name}</h4>
-            {st.ok ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-success-soft-foreground bg-success-soft border border-success/30 rounded px-1.5 py-0.5">
-                <CheckCircle2 className="w-3 h-3" /> Tamam
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
-                <AlertCircle className="w-3 h-3" /> {st.issues.join(' · ')}
-              </span>
-            )}
-          </div>
-        </div>
-        <Stat label="Masa" value={String(tt.tableCount)} />
-        <Stat label="Panel/Masa" value={String(tt.panelsPerTable)} />
-        <Stat label="Tek Masa" value={`${formatNumber(t?.totalWeightPerTable || 0)} kg`} />
-        <Stat label="Toplam" value={`${formatNumber(t?.grandTotal || 0)} t`} strong />
-        <Stat label="Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MWp`} />
-        <div className="flex gap-1">
-          <Button size="sm" variant="ghost" onClick={onEdit} title="Masa tipini düzenle"><Edit2 className="w-3.5 h-3.5" /></Button>
-          <Button size="sm" variant="ghost" onClick={onDelete} className="text-red-600 hover:bg-red-50 hover:text-red-700" title="Sil"><Trash2 className="w-3.5 h-3.5" /></Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div className="leading-tight">
-      <p className="text-[10px] text-slate-500 uppercase font-medium">{label}</p>
-      <p className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>{value}</p>
     </div>
   );
 }

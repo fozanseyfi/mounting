@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import type { Fastener } from '@/types';
 import { formatNumber } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
@@ -14,12 +13,21 @@ interface Props {
   fasteners: Fastener[];
   setFasteners: React.Dispatch<React.SetStateAction<Fastener[]>>;
   onChange: () => void;
+  /** Değiştikçe yeni bağlantı elemanı formu açılır */
+  addSignal?: number;
 }
 
-export function FastenersTab({ projectId, tableTypeId, fasteners, setFasteners, onChange }: Props) {
+export function FastenersTab({ projectId, tableTypeId, fasteners, setFasteners, onChange, addSignal = 0 }: Props) {
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState<Fastener | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (addSignal > 0) {
+      setEditing(null);
+      setOpenForm(true);
+    }
+  }, [addSignal]);
 
   async function handleDelete(id: string) {
     if (!confirm('Bu bağlantı elemanını silmek istediğinize emin misiniz?')) return;
@@ -33,14 +41,6 @@ export function FastenersTab({ projectId, tableTypeId, fasteners, setFasteners, 
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-slate-500">DIN katalogundan seç veya manuel gir — satıra tıklayınca düzenleme açılır</p>
-        <Button size="sm" onClick={() => { setEditing(null); setOpenForm(true); }}>
-          <Plus className="w-3.5 h-3.5" />
-          Bağlantı Elemanı Ekle
-        </Button>
-      </div>
-
       <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-[13px] whitespace-nowrap">
@@ -62,7 +62,7 @@ export function FastenersTab({ projectId, tableTypeId, fasteners, setFasteners, 
               {fasteners.length === 0 && (
                 <tr>
                   <td colSpan={10} className="text-center py-8 text-slate-500 text-sm">
-                    Henüz bağlantı elemanı eklenmedi — cıvata, somun, rondela ve klemp ekleyebilirsiniz
+                    Henüz bağlantı elemanı eklenmedi
                   </td>
                 </tr>
               )}
