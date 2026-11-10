@@ -19,29 +19,33 @@ const TableDesigner = dynamic(() => import('./TableDesigner').then((m) => m.Tabl
   ),
 });
 
+const TAB =
+  'rounded-b-none rounded-t px-4 py-2 text-[13px] font-semibold text-[#b3c2d8] hover:bg-white/10 hover:text-white data-[state=active]:bg-[#f4f5f7] data-[state=active]:text-[#16304f] data-[state=active]:shadow-none data-[state=active]:hover:bg-[#f4f5f7]';
+
 export function ProjectTabs({ project }: { project: Project }) {
   const router = useRouter();
   function refresh() { router.refresh(); }
 
   return (
     <Tabs defaultValue="types" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full max-w-3xl">
-        <TabsTrigger value="types" className="gap-2"><Boxes className="w-4 h-4" /> Masa Tipleri <span className="ml-1 text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">{project.tableTypes.length}</span></TabsTrigger>
-        <TabsTrigger value="cost" className="gap-2"><Wallet className="w-4 h-4" /> Maliyet</TabsTrigger>
-        <TabsTrigger value="3d" className="gap-2"><Box className="w-4 h-4" /> 3D</TabsTrigger>
-        <TabsTrigger value="summary" className="gap-2"><FileBarChart className="w-4 h-4" /> Özet & Rapor</TabsTrigger>
+      {/* Fizibilite model sekmeleri gibi: koyu şerit, aktif sekme açık zemin (içerik ile birleşir) */}
+      <TabsList className="project-tabs flex h-auto w-full justify-start gap-0.5 overflow-x-auto rounded-md rounded-b-none bg-[#16304f] p-1 pb-0 text-[#b3c2d8]">
+        <TabsTrigger value="types" className={TAB}><Boxes className="w-4 h-4" /> Masa Tipleri <span className="ml-1 rounded bg-white/15 px-1.5 text-[11px] tabular-nums">{project.tableTypes.length}</span></TabsTrigger>
+        <TabsTrigger value="cost" className={TAB}><Wallet className="w-4 h-4" /> Maliyet</TabsTrigger>
+        <TabsTrigger value="3d" className={TAB}><Box className="w-4 h-4" /> 3D</TabsTrigger>
+        <TabsTrigger value="summary" className={TAB}><FileBarChart className="w-4 h-4" /> Özet & Rapor</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="types">
+      <TabsContent className="mt-0 rounded-b-md border border-t-0 bg-[#f4f5f7] p-3" value="types">
         <TableTypesTab project={project} onChange={refresh} />
       </TabsContent>
-      <TabsContent value="cost">
+      <TabsContent className="mt-0 rounded-b-md border border-t-0 bg-[#f4f5f7] p-3" value="cost">
         <CostTab project={project} onChange={refresh} />
       </TabsContent>
-      <TabsContent value="3d">
+      <TabsContent className="mt-0 rounded-b-md border border-t-0 bg-[#f4f5f7] p-3" value="3d">
         <DesignerWrapper project={project} />
       </TabsContent>
-      <TabsContent value="summary">
+      <TabsContent className="mt-0 rounded-b-md border border-t-0 bg-[#f4f5f7] p-3" value="summary">
         <SummaryTab project={project} />
       </TabsContent>
     </Tabs>

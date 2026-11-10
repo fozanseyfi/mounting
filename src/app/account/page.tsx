@@ -1,5 +1,6 @@
 'use client';
 
+import { numLocale } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import {
   UserCircle2,
@@ -26,7 +27,7 @@ function initials(name: string): string {
 }
 
 function formatDate(d: string): string {
-  return new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d));
+  return new Intl.DateTimeFormat(numLocale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d));
 }
 
 type Msg = { tone: 'error' | 'success'; text: string } | null;

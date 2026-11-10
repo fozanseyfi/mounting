@@ -1,5 +1,6 @@
 'use client';
 
+import { numLocale } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -95,7 +96,7 @@ export function TableTypeFormDialog({ open, onOpenChange, projectId, editing, on
           </div>
 
           <div className="bg-primary-50 border border-primary-100 rounded-lg p-3 text-xs text-slate-700">
-            <p>Bu tip için toplam: <b>{(form.panelsPerTable * form.tableCount).toLocaleString('tr-TR')} panel</b></p>
+            <p>Bu tip için toplam: <b>{(form.panelsPerTable * form.tableCount).toLocaleString(numLocale())} panel</b></p>
           </div>
         </div>
 

@@ -7,10 +7,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
-  FolderOpen,
   FolderKanban,
   Plus,
   Library,
@@ -27,9 +26,13 @@ import {
   Menu,
   X,
   UserCircle2,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { readProfile, effectivePanelName, type LocalProfile } from '@/lib/local-profile';
+import { readProfile, type LocalProfile } from '@/lib/local-profile';
+import { logout } from '@/lib/session';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { LocaleToggle } from '@/components/LocaleToggle';
 
 interface NavGroup {
   label: string;
@@ -164,9 +167,16 @@ function NavLink({ href, icon: Icon, label, active, collapsed, onNavigate }: Nav
   );
 }
 
-function UserMenu({ name, role }: { name: string; role: string }) {
+function initials(name: string) {
+  const p = name.trim().split(/s+/).filter(Boolean);
+  return ((p[0]?.[0] || '?') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+}
+
+/** Hesap menüsü (Fizibilite ile aynı): avatar + ad + e-posta; açılır listede Profilim, Bildirimler, Çıkış Yap. */
+function UserMenu({ name, email, compact = false }: { name: string; email: string; compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!open) return;
@@ -177,47 +187,55 @@ function UserMenu({ name, role }: { name: string; role: string }) {
     return () => document.removeEventListener('mousedown', onClick);
   }, [open]);
 
+  const item = 'flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted';
+
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative min-w-0">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted"
-        aria-label="Kullanıcı menüsü"
+        className="flex min-w-0 items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted"
+        aria-label="Hesap menüsü"
       >
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-          {(name.charAt(0) || '?').toUpperCase()}
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar text-[11px] font-semibold text-white">
+          {initials(name)}
         </div>
-        <div className="hidden min-w-0 text-left sm:block">
-          <p className="truncate text-xs font-semibold leading-tight text-foreground">{name}</p>
-          <p className="truncate text-[10px] leading-tight text-muted-foreground">{role}</p>
-        </div>
-        <ChevronDown
-          className={cn('hidden size-3.5 text-muted-foreground transition-transform sm:block', open && 'rotate-180')}
-        />
+        {!compact && (
+          <>
+            <div className="min-w-0 leading-tight" data-no-i18n>
+              <p className="truncate text-[13px] font-semibold text-foreground">{name}</p>
+              <p className="truncate text-[11px] text-muted-foreground">{email}</p>
+            </div>
+            <ChevronDown className={cn('size-3.5 shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
+          </>
+        )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 w-48 overflow-hidden rounded-lg border bg-card shadow-lg">
-          <div className="border-b bg-muted/40 px-3 py-2 sm:hidden">
-            <p className="truncate text-sm font-semibold text-foreground">{name}</p>
-            <p className="text-xs text-muted-foreground">{role}</p>
+        <div className={cn('absolute top-full z-50 mt-1 w-56 overflow-hidden rounded-lg border bg-card shadow-lg', compact ? 'right-0' : 'left-0')}>
+          <div className="border-b bg-muted/40 px-3 py-2">
+            <p className="truncate text-sm font-semibold text-foreground" data-no-i18n>{name}</p>
+            <p className="truncate text-xs text-muted-foreground"><span data-no-i18n>{email}</span> · Yönetici</p>
           </div>
-          <Link
-            href="/account"
-            onClick={() => setOpen(false)}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
-          >
+          <Link href="/account" onClick={() => setOpen(false)} className={item}>
             <UserCircle2 className="size-4 text-muted-foreground" />
             Profilim
           </Link>
-          <Link
-            href="/notifications"
-            onClick={() => setOpen(false)}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
-          >
+          <Link href="/notifications" onClick={() => setOpen(false)} className={item}>
             <Bell className="size-4 text-muted-foreground" />
             Bildirimler
           </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              logout();
+              router.replace('/login');
+            }}
+            className={cn(item, 'border-t')}
+          >
+            <LogOut className="size-4 text-muted-foreground" />
+            Çıkış Yap
+          </button>
         </div>
       )}
     </div>
@@ -264,7 +282,7 @@ export function Sidebar() {
   }
 
   const userName = profile?.fullName || 'Kullanıcı';
-  const firmName = (profile && effectivePanelName(profile)) || 'Solar BOM';
+  const userEmail = profile?.email || '';
 
   return (
     <>
@@ -291,30 +309,21 @@ export function Sidebar() {
           </Link>
         </div>
 
-        {/* Desktop: panel adı */}
+        {/* Masaüstü: hesap menüsü sidebar'ın hemen sağında */}
         <div
-          className="hidden min-w-0 items-center gap-2 lg:flex"
+          className="hidden min-w-0 items-center lg:flex"
           style={{ marginLeft: 'var(--sidebar-w, 14rem)', transition: 'margin-left 200ms' }}
         >
-          <Link
-            href="/account"
-            className="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted"
-          >
-            <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
-            <span className="shrink-0 text-sm text-muted-foreground">Panel:</span>
-            <span className="truncate text-sm font-semibold text-foreground">{firmName}</span>
-          </Link>
+          <UserMenu name={userName} email={userEmail} />
         </div>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-          <Link
-            href="/notifications"
-            aria-label="Bildirimler"
-            className="relative flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <Bell className="size-4" />
-          </Link>
-          <UserMenu name={userName} role="Yönetici" />
+        {/* Sağ: dil + gece modu */}
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          <LocaleToggle />
+          <ThemeToggle />
+          <div className="lg:hidden">
+            <UserMenu name={userName} email={userEmail} compact />
+          </div>
         </div>
       </header>
 

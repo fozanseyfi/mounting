@@ -1,3 +1,4 @@
+import { numLocale } from '@/lib/i18n';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -6,8 +7,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatNumber(value: number, decimals = 2): string {
-  if (isNaN(value) || !isFinite(value)) return '0,00';
-  return value.toLocaleString('tr-TR', {
+  if (isNaN(value) || !isFinite(value)) return (0).toLocaleString(numLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  return value.toLocaleString(numLocale(), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
@@ -22,7 +23,7 @@ export function formatWeight(kg: number): string {
 
 export function formatDate(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleDateString('tr-TR', {
+  return d.toLocaleDateString(numLocale(), {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -31,7 +32,7 @@ export function formatDate(date: Date | string): string {
 
 export function formatDateTime(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleString('tr-TR', {
+  return d.toLocaleString(numLocale(), {
     day: '2-digit',
     month: 'short',
     year: 'numeric',

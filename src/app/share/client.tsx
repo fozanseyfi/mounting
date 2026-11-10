@@ -117,7 +117,7 @@ export function ShareLinksClient({ projects }: Props) {
                 </SelectTrigger>
                 <SelectContent>
                   {projects.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
+                    <SelectItem key={p.id} value={p.id} data-no-i18n>
                       {p.name}
                       {p.customer ? ` · ${p.customer}` : ''}
                     </SelectItem>

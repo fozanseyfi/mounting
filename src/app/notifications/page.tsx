@@ -1,5 +1,6 @@
 'use client';
 
+import { numLocale } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import { Bell, CheckCheck, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,7 +17,7 @@ const ago = (iso: string) => {
   if (m < 1) return 'az önce';
   if (m < 60) return `${m} dk önce`;
   if (m < 1440) return `${Math.round(m / 60)} saat önce`;
-  return new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
+  return new Date(iso).toLocaleDateString(numLocale(), { day: 'numeric', month: 'long' });
 };
 
 export default function NotificationsPage() {

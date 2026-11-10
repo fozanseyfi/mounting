@@ -1,0 +1,128 @@
+/*
+ * Gece modu (html.dark) — Fizibilite platformu ile aynı yaklaşım.
+ * Bileşenlerde sabit yazılmış slate/white sınıfları koyu zemine uyarlanır.
+ */
+
+/* EN: sayfa çevrilene kadar Türkçe metin görünmesin (en fazla 2,5 sn) */
+html.i18n-pending body { visibility: hidden; }
+
+.dark {
+  color-scheme: dark;
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 158 64% 45%;
+  --primary-foreground: 222 47% 8%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 98%;
+  --border: 217 33% 20%;
+  --input: 217 33% 24%;
+  --ring: 158 64% 45%;
+
+  --p-base: 52 211 153; --p-dark: 110 231 183; --p-soft: 18 41 30; --p-soft-foreground: 110 231 183; --p-light: 110 231 183;
+  --p-50: 16 36 28; --p-100: 20 48 36; --p-200: 30 70 52; --p-300: 52 120 90; --p-400: 52 180 130;
+  --p-500: 52 211 153; --p-600: 110 231 183; --p-700: 167 243 208; --p-800: 187 247 220; --p-900: 209 250 229;
+
+  --bg: #111827; --bg-soft: #161e2e; --bg-muted: #1c2638;
+  --border-c: #2a3647; --border-strong: #34425a;
+  --text-c: #e2e8f0; --text-muted: #a0aec0; --text-soft: #8a97aa; --text-faint: #718096;
+}
+
+/* Zeminler */
+.dark body { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+.dark .bg-white:not(.keep-white) { background-color: hsl(var(--card)); }
+.dark .bg-white\/95, .dark .bg-white\/90 { background-color: hsl(var(--card) / .95); }
+.dark .bg-white\/60 { background-color: hsl(var(--card) / .6); }
+.dark .bg-slate-50, .dark .bg-slate-50\/60, .dark .hover\:bg-slate-50:hover { background-color: #161e2e; }
+.dark .bg-slate-100, .dark .hover\:bg-slate-100:hover { background-color: #1c2638; }
+.dark .bg-slate-200, .dark .bg-slate-200\/80 { background-color: #263247; }
+.dark [class*="to-white"] { --tw-gradient-to: hsl(var(--card)) var(--tw-gradient-to-position); }
+.dark [class*="via-white"] { --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--card)) var(--tw-gradient-via-position), var(--tw-gradient-to); }
+.dark [class*="from-slate-50"] { --tw-gradient-from: #161e2e var(--tw-gradient-from-position); }
+.dark [class*="to-slate-50"] { --tw-gradient-to: #161e2e var(--tw-gradient-to-position); }
+
+/* Metinler */
+.dark .text-slate-900, .dark .text-slate-800 { color: #e2e8f0; }
+.dark .text-slate-700 { color: #cbd5e1; }
+.dark .text-slate-600 { color: #a9b4c4; }
+.dark .text-slate-500, .dark .hover\:text-slate-600:hover { color: #94a3b8; }
+.dark .text-slate-400 { color: #7d8aa0; }
+
+/* Çizgiler */
+.dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-200\/80 { border-color: #2a3647; }
+.dark .border-slate-300 { border-color: #34425a; }
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #2a3647; }
+
+/* Durum renkleri (açık zeminli uyarılar) */
+.dark .bg-amber-50, .dark .bg-amber-50\/40 { background-color: #2a2414; }
+.dark .hover\:bg-amber-50:hover { background-color: #33290f; }
+.dark .border-amber-200 { border-color: #5a4a1f; }
+.dark .text-amber-800, .dark .text-amber-700 { color: #f5d78a; }
+.dark .bg-emerald-50 { background-color: #12291e; }
+.dark .border-emerald-200 { border-color: #24533a; }
+.dark .text-emerald-700 { color: #9be0bd; }
+.dark .bg-red-50, .dark .hover\:bg-red-50:hover { background-color: #2c1617; }
+.dark .bg-blue-50, .dark .bg-blue-100 { background-color: #142236; }
+.dark .text-blue-700 { color: #a9c4ec; }
+
+/* Form alanları */
+.dark input:not([type=checkbox]):not([type=radio]):not([type=range]), .dark select, .dark textarea {
+  background-color: #0f1724; color: #e2e8f0; border-color: #34425a;
+}
+.dark input::placeholder, .dark textarea::placeholder { color: #64748b; }
+
+/* Grafikler (recharts) */
+.dark .recharts-cartesian-axis-tick-value { fill: #a9b4c4; }
+.dark .recharts-cartesian-grid line { stroke: #2a3647; }
+.dark .recharts-default-tooltip { background-color: #0f1724 !important; border-color: #34425a !important; color: #e2e8f0; }
+
+/* ---- Klasik görünüm (.ui-classic) gece modu ---- */
+.dark .ui-classic {
+  --primary: 214 60% 62%;
+  --primary-foreground: 222 47% 8%;
+  --ring: 214 60% 62%;
+  --accent: 217 28% 16%;
+  --accent-foreground: 210 40% 98%;
+  --border: 217 25% 22%;
+  --input: 217 25% 28%;
+  --secondary: 217 28% 16%;
+  --muted: 217 28% 16%;
+  --p-base: 79 127 196; --p-dark: 169 196 236; --p-soft: 20 34 54; --p-soft-foreground: 169 196 236; --p-light: 120 160 215;
+  --p-50: 20 34 54; --p-100: 26 42 64; --p-200: 44 62 88; --p-300: 79 107 150; --p-400: 100 140 200;
+  --p-500: 120 160 215; --p-600: 150 182 228; --p-700: 169 196 236; --p-800: 200 218 243; --p-900: 219 229 243;
+  --c-accent: #4f7fc4; --c-accent-hover: #a9c4ec; --c-accent-soft: #142236;
+  background: hsl(var(--background));
+}
+.dark .ui-classic h1 { color: #dbe5f3; }
+.dark .ui-classic .bg-gradient-to-br, .dark .ui-classic .bg-gradient-to-r, .dark .ui-classic .bg-gradient-to-b { background-color: hsl(var(--card)); }
+.dark .ui-classic .hero-gradient, .dark .ui-classic [class*="kpi-gradient-"] { background: #1d3557; }
+.dark .ui-classic .shimmer-text { -webkit-text-fill-color: #dbe5f3; color: #dbe5f3; }
+.dark .ui-classic .text-emerald-600, .dark .ui-classic .text-emerald-700, .dark .ui-classic .text-emerald-800 { color: #a9c4ec; }
+.dark .ui-classic .bg-emerald-50 { background-color: #142236; }
+.dark .ui-classic .border-emerald-200 { border-color: #2c3e58; }
+.dark .ui-classic table { border-color: #34425a; }
+.dark .ui-classic table th, .dark .ui-classic table td { border-color: #2a3647; }
+.dark .ui-classic table thead tr, .dark .ui-classic table th { background: #1b2636; color: #dbe5f3; }
+.dark .ui-classic table tbody tr:hover td { background: #1a2a40; }
+.dark .ui-classic table tfoot td { background: #1a2230; }
+
+/* Proje sekmeleri (koyu şerit) */
+.dark .project-tabs { background-color: #0b1a2f; }
+.dark .project-tabs [data-state="active"] { background-color: #161e2e; color: #e2e8f0; }
+.dark .bg-\[\#f4f5f7\] { background-color: #111826; }
+
+/* Açık renkli rozetler */
+.dark .bg-amber-100 { background-color: #3a2f12; }
+.dark .bg-emerald-100 { background-color: #12291e; }
+.dark .bg-rose-100, .dark .bg-red-100 { background-color: #3d1c1a; }
+.dark .bg-violet-100, .dark .bg-yellow-100 { background-color: #2a2414; }
+.dark .text-amber-600 { color: #f0c060; }
+.dark .text-red-600 { color: #f07a73; }

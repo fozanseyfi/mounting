@@ -56,8 +56,8 @@ export function ReportsView({
               {projects.map((p) => (
                 <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
                   <td className="px-6 py-3">
-                    <Link href={`/projects/${p.id}`} className="font-semibold text-slate-900 hover:text-primary">{p.name}</Link>
-                    {p.location && <p className="text-xs text-slate-500 mt-0.5">{p.location}</p>}
+                    <Link href={`/projects/${p.id}`} className="font-semibold text-slate-900 hover:text-primary" data-no-i18n>{p.name}</Link>
+                    {p.location && <p className="text-xs text-slate-500 mt-0.5" data-no-i18n>{p.location}</p>}
                   </td>
                   <td className="px-6 py-3 text-sm text-slate-600">{p.customer || '—'}</td>
                   <td className="px-6 py-3 text-right text-sm font-semibold tabular-nums">{formatNumber(p.totals?.grandTotal || 0)} ton</td>

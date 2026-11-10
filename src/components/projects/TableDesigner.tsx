@@ -1,5 +1,6 @@
 'use client';
 
+import { numLocale } from '@/lib/i18n';
 import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Grid, Html, GizmoHelper, GizmoViewport } from '@react-three/drei';
@@ -1861,7 +1862,7 @@ function LayoutWizardModal({
           </div>
           <div>
             <p className="text-slate-600">Sıra Genişliği</p>
-            <p className="font-bold text-primary-dark text-base">{((form.frontColumnCount - 1) * form.frontSpacing).toLocaleString('tr-TR')} mm</p>
+            <p className="font-bold text-primary-dark text-base">{((form.frontColumnCount - 1) * form.frontSpacing).toLocaleString(numLocale())} mm</p>
           </div>
           <div>
             <p className="text-slate-600">Montaj</p>

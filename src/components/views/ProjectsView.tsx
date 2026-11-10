@@ -73,14 +73,14 @@ export function ProjectsView({
                   <div className="hero-gradient h-2 group-hover:h-3 transition-all" />
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <Link href={`/projects/${p.id}`} className="font-semibold text-slate-900 hover:text-primary line-clamp-1">
+                      <Link href={`/projects/${p.id}`} className="font-semibold text-slate-900 hover:text-primary line-clamp-1" data-no-i18n>
                         {p.name}
                       </Link>
                       <span className={`inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full border ${status.color}`}>
                         {status.label}
                       </span>
                     </div>
-                    {p.customer && <p className="text-xs text-slate-500 mb-3">{p.customer}{p.location ? ` · ${p.location}` : ''}</p>}
+                    {p.customer && <p className="text-xs text-slate-500 mb-3" data-no-i18n>{p.customer}{p.location ? ` · ${p.location}` : ''}</p>}
 
                     <div className="grid grid-cols-3 gap-2 mt-2 mb-4">
                       <div className="bg-slate-50 rounded-lg p-2.5">

@@ -106,7 +106,7 @@ export function TableTypesTab({ project, onChange }: Props) {
                   <div className="flex items-center justify-between gap-2">
                     <span className={`truncate text-sm font-semibold ${isSel ? 'text-primary-dark' : 'text-slate-900'}`}>{tt.name}</span>
                     {st.ok ? (
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" aria-label="Tamamlandı" />
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-success" aria-label="Tamamlandı" />
                     ) : (
                       <AlertCircle className="w-4 h-4 shrink-0 text-amber-500" aria-label="Eksik var" />
                     )}
@@ -160,7 +160,7 @@ function SelectedHeader({ tt, onEdit, onDelete }: { tt: TableType; onEdit: () =>
           <div className="flex items-center gap-2">
             <h4 className="text-base font-bold text-slate-900 truncate">{tt.name}</h4>
             {st.ok ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-success-soft-foreground bg-success-soft border border-success/30 rounded px-1.5 py-0.5">
                 <CheckCircle2 className="w-3 h-3" /> Tamam
               </span>
             ) : (
