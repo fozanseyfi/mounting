@@ -126,3 +126,4 @@ html.i18n-pending body { visibility: hidden; }
 .dark .bg-violet-100, .dark .bg-yellow-100 { background-color: #2a2414; }
 .dark .text-amber-600 { color: #f0c060; }
 .dark .text-red-600 { color: #f07a73; }
+.dark .project-tabs .bg-white { background-color: #dbe5f3; }

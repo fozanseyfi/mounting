@@ -48,17 +48,20 @@ function ExportButtons({ project }: { project: Project }) {
     }
   }
 
-  const btn =
-    'inline-flex h-8 shrink-0 items-center gap-1.5 rounded bg-blue-600 px-3 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50';
+  const base =
+    'inline-flex h-8 shrink-0 items-center gap-1.5 rounded border px-3 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50';
+  // Fizibilite model başlığı: ghost (çerçeveli) + primary (beyaz zemin, lacivert yazı)
+  const ghost = `${base} border-white/40 bg-transparent text-white hover:bg-white/10`;
+  const primary = `${base} border-white bg-white text-[#16304f] hover:bg-[#e8eef6]`;
   const title = ready ? undefined : 'Önce masa tipi ve parça girin';
 
   return (
     <div className="flex shrink-0 items-center gap-1.5 self-center py-1">
-      <button type="button" className={btn} disabled={!ready || busy !== null} title={title} onClick={() => run('xlsx')}>
+      <button type="button" className={ghost} disabled={!ready || busy !== null} title={title} onClick={() => run('xlsx')}>
         {busy === 'xlsx' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5" />}
         Excel Al
       </button>
-      <button type="button" className={btn} disabled={!ready || busy !== null} title={title} onClick={() => run('pdf')}>
+      <button type="button" className={primary} disabled={!ready || busy !== null} title={title} onClick={() => run('pdf')}>
         {busy === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
         PDF Rapor Al
       </button>

@@ -26,9 +26,9 @@ export function ProjectDetailView({
     <main className="flex-1 space-y-3 p-3 sm:p-4 lg:px-6 lg:py-4">
       <DbWarning show={dbError} local={localMode} />
 
-      {/* Kompakt başlık: üstte geri + ad + özellikler, altta eşit dağılmış KPI şeridi */}
-      <div className="rounded-md border bg-card">
-        <div className="flex min-w-0 items-center gap-2 px-3 py-2">
+      {/* Üst bar: solda geri + ad + özellikler, sağda (sağa yaslı) KPI'lar */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-md border bg-card px-3 py-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <Link
             href="/projects"
             title="Projelere Dön"
@@ -41,12 +41,13 @@ export function ProjectDetailView({
             {project.name}
           </h1>
           <span className={`shrink-0 rounded border px-1.5 py-px text-[10px] font-semibold ${status.color}`}>{status.label}</span>
-          <p className="ml-1 hidden truncate text-xs text-muted-foreground sm:block">
+          <p className="ml-1 hidden min-w-0 truncate text-xs text-muted-foreground sm:block">
             {meta && <span data-no-i18n>{meta} · </span>}
             {project.panelWattage} Wp · {project.tiltAngle}°
           </p>
         </div>
-        <dl className="grid grid-cols-3 divide-x border-t md:grid-cols-6">
+        <dl className="ml-auto flex flex-wrap items-center justify-end divide-x divide-slate-200">
+
           <Kpi label="Masa Tipi" value={String(project.tableTypes.length)} />
           <Kpi label="Toplam Masa" value={formatNumber(t?.totalTables || 0, 0)} />
           <Kpi label="Toplam Panel" value={formatNumber(t?.totalPanels || 0, 0)} />
@@ -63,7 +64,7 @@ export function ProjectDetailView({
 
 function Kpi({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div className="px-3 py-1.5 leading-tight max-md:[&:nth-child(n+4)]:border-t">
+    <div className="whitespace-nowrap px-4 leading-tight first:pl-0 last:pr-0">
       <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>{value}</dd>
     </div>
