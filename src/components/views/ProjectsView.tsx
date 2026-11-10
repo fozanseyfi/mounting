@@ -92,7 +92,7 @@ export function ProjectsView({
                       <div className="bg-slate-50 rounded-lg p-2.5">
                         <p className="text-[10px] text-slate-500 uppercase font-medium">Güç</p>
                         <p className="text-sm font-bold text-slate-900 tabular-nums mt-0.5">
-                          {formatNumber(p.totals?.totalPowerMW || 0)} <span className="text-[10px] font-normal text-slate-500">MW</span>
+                          {formatNumber(p.totals?.totalPowerMW || 0)} <span className="text-[10px] font-normal text-slate-500">MWp</span>
                         </p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-2.5">

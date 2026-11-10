@@ -26,9 +26,9 @@ export function ProjectDetailView({
     <main className="flex-1 space-y-3 p-3 sm:p-4 lg:px-6 lg:py-4">
       <DbWarning show={dbError} local={localMode} />
 
-      {/* Kompakt başlık: geri + ad + durum + özellikler | KPI şeridi */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-card px-3 py-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+      {/* Kompakt başlık: üstte geri + ad + özellikler, altta eşit dağılmış KPI şeridi */}
+      <div className="rounded-md border bg-card">
+        <div className="flex min-w-0 items-center gap-2 px-3 py-2">
           <Link
             href="/projects"
             title="Projelere Dön"
@@ -37,25 +37,22 @@ export function ProjectDetailView({
           >
             <ArrowLeft className="size-4" />
           </Link>
-          <div className="min-w-0">
-            <div className="flex min-w-0 items-center gap-2">
-              <h1 className="truncate text-base font-bold leading-tight text-slate-900" data-no-i18n>
-                {project.name}
-              </h1>
-              <span className={`shrink-0 rounded border px-1.5 py-px text-[10px] font-semibold ${status.color}`}>{status.label}</span>
-            </div>
-            <p className="truncate text-[11px] leading-tight text-muted-foreground">
-              {meta && <span data-no-i18n>{meta} · </span>}
-              {project.panelWattage} Wp · {project.tiltAngle}°
-            </p>
-          </div>
+          <h1 className="truncate text-base font-bold leading-tight text-slate-900" data-no-i18n>
+            {project.name}
+          </h1>
+          <span className={`shrink-0 rounded border px-1.5 py-px text-[10px] font-semibold ${status.color}`}>{status.label}</span>
+          <p className="ml-1 hidden truncate text-xs text-muted-foreground sm:block">
+            {meta && <span data-no-i18n>{meta} · </span>}
+            {project.panelWattage} Wp · {project.tiltAngle}°
+          </p>
         </div>
-
-        <dl className="flex flex-wrap items-center gap-x-5 gap-y-1">
-          <Kpi label="Masa Tipi" value={`${project.tableTypes.length}`} sub={`${formatNumber(t?.totalTables || 0, 0)} masa`} />
-          <Kpi label="Toplam Tonaj" value={`${formatNumber(t?.grandTotal || 0)} t`} strong />
-          <Kpi label="Kurulu Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MW`} sub={`${formatNumber(t?.totalPanels || 0, 0)} panel`} />
-          <Kpi label="Verimlilik" value={`${formatNumber(t?.kgPerMW || 0, 0)} kg/MW`} />
+        <dl className="grid grid-cols-3 divide-x border-t md:grid-cols-6">
+          <Kpi label="Masa Tipi" value={String(project.tableTypes.length)} />
+          <Kpi label="Toplam Masa" value={formatNumber(t?.totalTables || 0, 0)} />
+          <Kpi label="Toplam Panel" value={formatNumber(t?.totalPanels || 0, 0)} />
+          <Kpi label="Kurulu Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MWp`} />
+          <Kpi label="Toplam Tonaj" value={`${formatNumber(t?.grandTotal || 0)} ton`} strong />
+          <Kpi label="Çelik Yoğunluğu" value={`${formatNumber(t && t.totalPowerMW > 0 ? t.grandTotal / t.totalPowerMW : 0, 1)} Ton / MWp`} />
         </dl>
       </div>
 
@@ -64,14 +61,11 @@ export function ProjectDetailView({
   );
 }
 
-function Kpi({ label, value, sub, strong }: { label: string; value: string; sub?: string; strong?: boolean }) {
+function Kpi({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div className="leading-tight">
+    <div className="px-3 py-1.5 leading-tight max-md:[&:nth-child(n+4)]:border-t">
       <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
-      <dd className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>
-        {value}
-        {sub && <span className="ml-1 text-[11px] font-normal text-muted-foreground">{sub}</span>}
-      </dd>
+      <dd className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>{value}</dd>
     </div>
   );
 }

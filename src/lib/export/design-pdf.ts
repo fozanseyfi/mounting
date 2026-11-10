@@ -148,9 +148,9 @@ export function exportDesignPDF(
       ['Toplam Galvaniz', `${formatNumber(t.totalGalvanizingWeight)} ton`],
       ['Toplam Bağlantı', `${formatNumber(t.totalFastenerWeight)} ton`],
       ['GRAND TOTAL', `${formatNumber(t.grandTotal)} ton`],
-      ['Toplam Güç', `${formatNumber(t.totalPowerMW)} MW`],
+      ['Toplam Güç', `${formatNumber(t.totalPowerMW)} MWp`],
       ['Toplam Panel', `${formatNumber(t.totalPanels, 0)} adet`],
-      ['kg / MW', formatNumber(t.kgPerMW, 1)],
+      ['Ton / MWp', formatNumber(t.kgPerMW / 1000, 2)],
     ];
     doc.setFontSize(11);
     totals.forEach(([k, v]) => {

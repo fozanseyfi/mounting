@@ -32,7 +32,7 @@ export function DashboardView({
               {projects.length > 0 ? (
                 <>
                   {projects.length} proje kayıtlı · <span className="tabular-nums">{formatNumber(tonnage)} ton</span> ·{' '}
-                  <span className="tabular-nums">{formatNumber(mw)} MW</span>
+                  <span className="tabular-nums">{formatNumber(mw)} MWp</span>
                 </>
               ) : (
                 'Henüz proje yok'

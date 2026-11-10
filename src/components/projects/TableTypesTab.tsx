@@ -174,7 +174,7 @@ function SelectedHeader({ tt, onEdit, onDelete }: { tt: TableType; onEdit: () =>
         <Stat label="Panel/Masa" value={String(tt.panelsPerTable)} />
         <Stat label="Tek Masa" value={`${formatNumber(t?.totalWeightPerTable || 0)} kg`} />
         <Stat label="Toplam" value={`${formatNumber(t?.grandTotal || 0)} t`} strong />
-        <Stat label="Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MW`} />
+        <Stat label="Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MWp`} />
         <div className="flex gap-1">
           <Button size="sm" variant="ghost" onClick={onEdit} title="Masa tipini düzenle"><Edit2 className="w-3.5 h-3.5" /></Button>
           <Button size="sm" variant="ghost" onClick={onDelete} className="text-red-600 hover:bg-red-50 hover:text-red-700" title="Sil"><Trash2 className="w-3.5 h-3.5" /></Button>

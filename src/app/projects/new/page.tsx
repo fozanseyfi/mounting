@@ -131,7 +131,7 @@ export default function NewProjectPage() {
                   <div className="space-y-2">
                     <Label htmlFor="panelWattage">Panel Gücü (Wp) *</Label>
                     <Input id="panelWattage" type="number" min={1} value={form.panelWattage} onChange={(e) => update('panelWattage', parseFloat(e.target.value) || 0)} />
-                    <p className="text-xs text-slate-500">Tek panel gücü — toplam MW hesaplaması bu değerden yapılır</p>
+                    <p className="text-xs text-slate-500">Tek panel gücü — toplam MWp hesaplaması bu değerden yapılır</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="tiltAngle">Eğim Açısı (°)</Label>

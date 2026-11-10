@@ -18,7 +18,7 @@ export function ProjectTonnageChart({ data }: { data: { name: string; ton: numbe
         <Tooltip
           contentStyle={{ borderRadius: 8, fontSize: 12, border: '1px solid #e2e8f0' }}
           formatter={(value: number, name: string) =>
-            name === 'ton' ? [`${formatNumber(value)} ton`, 'Tonaj'] : [`${formatNumber(value)} MW`, 'Güç']
+            name === 'ton' ? [`${formatNumber(value)} ton`, 'Tonaj'] : [`${formatNumber(value)} MWp`, 'Güç']
           }
         />
         <Bar dataKey="ton" fill="#2D7D46" radius={[6, 6, 0, 0]} />

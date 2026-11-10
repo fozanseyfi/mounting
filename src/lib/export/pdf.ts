@@ -7,7 +7,7 @@ export async function downloadPDF(project: Project) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const t = project.totals!;
   const c = project.cost;
-  const sym = project.pricing?.currency === 'USD' ? '$' : project.pricing?.currency === 'EUR' ? '€' : 'TL';
+  const sym = 'USD';
 
   // Cover
   doc.setFillColor(45, 125, 70);
@@ -61,9 +61,9 @@ export async function downloadPDF(project: Project) {
     ['Toplam Çelik', `${formatNumber(t.totalSteelWeight)} ton`],
     ['Toplam Galvaniz', `${formatNumber(t.totalGalvanizingWeight)} ton`],
     ['Toplam Bağlantı', `${formatNumber(t.totalFastenerWeight)} ton`],
-    ['Toplam Güç', `${formatNumber(t.totalPowerMW)} MW`],
+    ['Toplam Güç', `${formatNumber(t.totalPowerMW)} MWp`],
     ['Toplam Panel', `${formatNumber(t.totalPanels, 0)} adet`],
-    ['kg / MW', formatNumber(t.kgPerMW, 1)],
+    ['Ton / MWp', formatNumber(t.kgPerMW / 1000, 2)],
   ];
   doc.setFontSize(9);
   kpis.forEach(([k, v]) => {
@@ -86,7 +86,7 @@ export async function downloadPDF(project: Project) {
     doc.text(`TOPLAM ÇELİK MALİYETİ: ${formatNumber(c.totalCost, 0)} ${sym}`, 148, 140, { align: 'center' });
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${formatNumber(c.costPerMW, 0)} ${sym}/MW · ${formatNumber(c.costPerTon, 0)} ${sym}/ton`, 148, 146, { align: 'center' });
+    doc.text(`${formatNumber(c.costPerMW, 0)} USD / MWp · ${formatNumber(t.kgPerMW / 1000, 2)} Ton / MWp`, 148, 146, { align: 'center' });
   }
 
   // === Page 2: Masa Tipi Özeti ===
@@ -100,7 +100,7 @@ export async function downloadPDF(project: Project) {
 
   autoTable(doc, {
     startY: 24,
-    head: [['Tip', 'Açıklama', 'Adet', 'Panel/Masa', 'Tek Masa (kg)', 'Toplam (ton)', 'MW']],
+    head: [['Tip', 'Açıklama', 'Adet', 'Panel/Masa', 'Tek Masa (kg)', 'Toplam (ton)', 'MWp']],
     body: project.tableTypes.map((tt) => {
       const tot = tt.totals!;
       return [
@@ -155,8 +155,8 @@ export async function downloadPDF(project: Project) {
       startY: finalY,
       head: [['Birim Maliyet', 'Değer']],
       body: [
-        ['/ MW', `${formatNumber(c.costPerMW, 0)} ${sym}`],
-        ['/ ton', `${formatNumber(c.costPerTon, 0)} ${sym}`],
+        ['USD / MWp', `${formatNumber(c.costPerMW, 0)} USD / MWp`],
+        ['Ton / MWp', `${formatNumber(t.kgPerMW / 1000, 2)} Ton / MWp`],
       ],
       headStyles: { fillColor: [33, 150, 243], textColor: 255, fontSize: 10 },
       bodyStyles: { fontSize: 10 },

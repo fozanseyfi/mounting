@@ -323,7 +323,7 @@ export function handleLocalApi(method: string, path: string, body: Record<string
         fastenerPricePerKg: 0,
         transportationFlat: 0,
         otherCosts: 0,
-        currency: (body.currency as string) || 'TRY',
+        currency: 'USD',
         notes: (body.notes as string) ?? null,
         updatedAt: now(),
       };

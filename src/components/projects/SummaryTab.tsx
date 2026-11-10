@@ -1,181 +1,131 @@
 'use client';
 
-import { useState } from 'react';
-import { FileSpreadsheet, FileText, Loader2, Layers } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { formatNumber } from '@/lib/utils';
 import type { Project } from '@/types';
-import { MaterialBreakdownChart } from '@/components/dashboard/DashboardCharts';
-import { useToast } from '@/components/ui/toast';
-import { downloadExcel } from '@/lib/export/excel';
-import { downloadPDF } from '@/lib/export/pdf';
 
-const CUR_SYM = (c?: string) => (c === 'USD' ? '$' : c === 'EUR' ? '€' : '₺');
-
+/** Özet & Rapor — kurumsal, kompakt: tek KPI şeridi + malzeme ve masa tipi tabloları. */
 export function SummaryTab({ project }: { project: Project }) {
-  const [busy, setBusy] = useState<'excel' | 'pdf' | null>(null);
-  const { toast } = useToast();
-
   const t = project.totals!;
   const c = project.cost;
-  const sym = CUR_SYM(project.pricing?.currency);
+  const tonPerMWp = t.totalPowerMW > 0 ? t.grandTotal / t.totalPowerMW : 0;
 
-  const pieData = [
-    { name: 'Sac (Çelik)', value: t.totalSteelWeight },
-    { name: 'Galvaniz', value: t.totalGalvanizingWeight },
-    { name: 'Bağlantı', value: t.totalFastenerWeight },
+  const kpis: [string, string][] = [
+    ['Toplam Masa', `${formatNumber(t.totalTables, 0)}`],
+    ['Masa Tipi', `${project.tableTypes.length}`],
+    ['Toplam Panel', formatNumber(t.totalPanels, 0)],
+    ['Kurulu Güç', `${formatNumber(t.totalPowerMW)} MWp`],
+    ['Toplam Tonaj', `${formatNumber(t.grandTotal)} ton`],
+    ['Çelik Yoğunluğu', `${formatNumber(tonPerMWp, 1)} Ton / MWp`],
+  ];
+  if (c) kpis.push(['Toplam Maliyet', `${formatNumber(c.totalCost, 0)} USD`]);
+
+  const materials: [string, number][] = [
+    ['Sac (Çelik)', t.totalSteelWeight],
+    ['Galvaniz Kaplama', t.totalGalvanizingWeight],
+    ['Bağlantı Elemanları', t.totalFastenerWeight],
   ];
 
-  async function handleExcel() {
-    setBusy('excel');
-    try { await downloadExcel(project); toast('Excel raporu indirildi', 'success'); }
-    catch { toast('Excel oluşturulamadı', 'error'); }
-    setBusy(null);
-  }
-
-  async function handlePDF() {
-    setBusy('pdf');
-    try { await downloadPDF(project); toast('PDF raporu indirildi', 'success'); }
-    catch { toast('PDF oluşturulamadı', 'error'); }
-    setBusy(null);
-  }
+  const th = 'px-3 py-1.5 font-semibold';
+  const td = 'px-3 py-1.5 tabular-nums';
 
   return (
-    <div className="space-y-6">
-      {/* Top: KPI band */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <KPIBlock label="Toplam Masa" value={`${formatNumber(t.totalTables, 0)} adet`} note={`${project.tableTypes.length} farklı tip`} />
-        <KPIBlock label="Toplam Tonaj" value={`${formatNumber(t.grandTotal)} ton`} note="Galvaniz + bağlantı dahil" />
-        <KPIBlock label="Kurulu Güç" value={`${formatNumber(t.totalPowerMW)} MW`} note={`${formatNumber(t.totalPanels, 0)} panel`} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-          <h3 className="text-base font-semibold text-slate-900 mb-4">Proje Toplamları</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <BigKPI label="Toplam Çelik (Sac)" value={`${formatNumber(t.totalSteelWeight)} ton`} color="bg-emerald-50 text-emerald-700 border-emerald-200" />
-            <BigKPI label="Toplam Galvaniz" value={`${formatNumber(t.totalGalvanizingWeight)} ton`} color="bg-amber-50 text-amber-700 border-amber-200" />
-            <BigKPI label="Toplam Bağlantı Elemanı" value={`${formatNumber(t.totalFastenerWeight)} ton`} color="bg-blue-50 text-blue-700 border-blue-200" />
-            <BigKPI label="GRAND TOTAL" value={`${formatNumber(t.grandTotal)} ton`} color="bg-primary text-white border-primary-dark" highlight />
+    <div className="space-y-3">
+      {/* KPI şeridi */}
+      <dl className="grid grid-cols-2 divide-x divide-y rounded-md border bg-white sm:grid-cols-4 sm:divide-y-0 lg:grid-cols-7">
+        {kpis.map(([label, value], i) => (
+          <div key={label} className={`px-3 py-2 ${i === 4 ? 'bg-slate-50' : ''}`}>
+            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
+            <dd className={`mt-0.5 text-sm font-bold tabular-nums ${i === 4 ? 'text-primary-dark' : 'text-slate-900'}`}>{value}</dd>
           </div>
+        ))}
+      </dl>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-100">
-            <SmallStat label="Toplam Panel" value={formatNumber(t.totalPanels, 0)} />
-            <SmallStat label="Toplam Güç" value={`${formatNumber(t.totalPowerMW)} MW`} />
-            <SmallStat label="kg / MW" value={formatNumber(t.kgPerMW, 1)} />
-          </div>
-
-          {c && (
-            <div className="mt-4 pt-4 border-t border-slate-100 bg-primary-50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
-              <p className="text-xs uppercase font-semibold text-primary-dark">Toplam Maliyet</p>
-              <p className="text-2xl font-bold text-primary-dark tabular-nums mt-1">{formatNumber(c.totalCost, 0)} {sym}</p>
-              <div className="flex gap-4 text-xs mt-2 text-slate-600">
-                <span>{formatNumber(c.costPerMW, 0)} {sym}/MW</span>
-                <span>·</span>
-                <span>{formatNumber(c.costPerTon, 0)} {sym}/ton</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-          <h3 className="text-base font-semibold text-slate-900 mb-4">Malzeme Dağılımı</h3>
-          <MaterialBreakdownChart data={pieData} />
-        </div>
-      </div>
-
-      {/* Per-table-type breakdown */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-primary" />
-          Masa Tipi Bazlı Dağılım
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        {/* Malzeme dağılımı */}
+        <section className="rounded-md border bg-white">
+          <h3 className="border-b px-3 py-1.5 text-xs font-semibold text-slate-700">Malzeme Dağılımı</h3>
+          <table className="w-full whitespace-nowrap text-[13px]">
             <thead>
-              <tr className="bg-slate-50 text-xs text-slate-600 uppercase">
-                <th className="text-left px-3 py-2">Tip</th>
-                <th className="text-right px-3 py-2">Adet</th>
-                <th className="text-right px-3 py-2">Panel/Masa</th>
-                <th className="text-right px-3 py-2">Tek Masa (kg)</th>
-                <th className="text-right px-3 py-2">Toplam Tonaj</th>
-                <th className="text-right px-3 py-2">MW</th>
+              <tr className="bg-slate-100 text-[11px] text-slate-600">
+                <th className={`${th} text-left`}>Kalem</th>
+                <th className={`${th} text-right`}>Ton</th>
+                <th className={`${th} text-right`}>Pay</th>
               </tr>
             </thead>
             <tbody>
-              {project.tableTypes.map((tt) => {
-                const tot = tt.totals!;
+              {materials.map(([label, v]) => {
+                const pct = t.grandTotal > 0 ? (v / t.grandTotal) * 100 : 0;
                 return (
-                  <tr key={tt.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="px-3 py-2 font-semibold text-slate-900">{tt.name}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{tt.tableCount}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{tt.panelsPerTable}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{formatNumber(tot.totalWeightPerTable, 1)}</td>
-                    <td className="px-3 py-2 text-right tabular-nums font-bold text-primary-dark">{formatNumber(tot.grandTotal, 2)} ton</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{formatNumber(tot.totalPowerMW, 2)}</td>
+                  <tr key={label} className="border-t border-slate-100">
+                    <td className="px-3 py-1.5 text-slate-800">{label}</td>
+                    <td className={`${td} text-right`}>{formatNumber(v)}</td>
+                    <td className={`${td} text-right text-slate-500`}>{formatNumber(pct, 1)}%</td>
                   </tr>
                 );
               })}
-              <tr className="bg-primary-50 border-t-2 border-primary/30">
-                <td className="px-3 py-3 font-bold text-primary-dark">TOPLAM</td>
-                <td className="px-3 py-3 text-right tabular-nums font-bold">{t.totalTables}</td>
-                <td className="px-3 py-3 text-right tabular-nums">—</td>
-                <td className="px-3 py-3 text-right tabular-nums">—</td>
-                <td className="px-3 py-3 text-right tabular-nums font-bold text-primary-dark">{formatNumber(t.grandTotal, 2)} ton</td>
-                <td className="px-3 py-3 text-right tabular-nums font-bold">{formatNumber(t.totalPowerMW, 2)}</td>
+              <tr className="border-t-2 border-slate-300 bg-slate-50 font-bold text-primary-dark">
+                <td className="px-3 py-1.5">GRAND TOTAL</td>
+                <td className={`${td} text-right`}>{formatNumber(t.grandTotal)}</td>
+                <td className={`${td} text-right`}>100%</td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
+          {c && (
+            <dl className="divide-y border-t text-[13px]">
+              <div className="flex justify-between px-3 py-1.5">
+                <dt className="text-slate-500">Toplam maliyet</dt>
+                <dd className="font-semibold tabular-nums">{formatNumber(c.totalCost, 0)} USD</dd>
+              </div>
+              <div className="flex justify-between px-3 py-1.5">
+                <dt className="text-slate-500">Birim maliyet</dt>
+                <dd className="font-semibold tabular-nums">{formatNumber(c.costPerMW, 0)} USD / MWp</dd>
+              </div>
+            </dl>
+          )}
+        </section>
 
-      {/* Export */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 className="text-base font-semibold text-slate-900">Rapor Çıktıları</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Tüm masa tipleri ve maliyet kalemleri raporda yer alır</p>
+        {/* Masa tipi bazlı dağılım */}
+        <section className="rounded-md border bg-white">
+          <h3 className="border-b px-3 py-1.5 text-xs font-semibold text-slate-700">Masa Tipi Bazlı Dağılım</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full whitespace-nowrap text-[13px]">
+              <thead>
+                <tr className="bg-slate-100 text-[11px] text-slate-600">
+                  <th className={`${th} text-left`}>Tip</th>
+                  <th className={`${th} text-right`}>Masa</th>
+                  <th className={`${th} text-right`}>Panel/Masa</th>
+                  <th className={`${th} text-right`}>Tek Masa (kg)</th>
+                  <th className={`${th} text-right`}>Tonaj (ton)</th>
+                  <th className={`${th} text-right`}>MWp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {project.tableTypes.map((tt) => {
+                  const tot = tt.totals!;
+                  return (
+                    <tr key={tt.id} className="border-t border-slate-100">
+                      <td className="px-3 py-1.5 font-semibold text-slate-900">{tt.name}</td>
+                      <td className={`${td} text-right`}>{tt.tableCount}</td>
+                      <td className={`${td} text-right`}>{tt.panelsPerTable}</td>
+                      <td className={`${td} text-right`}>{formatNumber(tot.totalWeightPerTable, 1)}</td>
+                      <td className={`${td} text-right font-semibold`}>{formatNumber(tot.grandTotal, 2)}</td>
+                      <td className={`${td} text-right`}>{formatNumber(tot.totalPowerMW, 2)}</td>
+                    </tr>
+                  );
+                })}
+                <tr className="border-t-2 border-slate-300 bg-slate-50 font-bold text-primary-dark">
+                  <td className="px-3 py-1.5">TOPLAM</td>
+                  <td className={`${td} text-right`}>{t.totalTables}</td>
+                  <td className={`${td} text-right`}>—</td>
+                  <td className={`${td} text-right`}>—</td>
+                  <td className={`${td} text-right`}>{formatNumber(t.grandTotal, 2)}</td>
+                  <td className={`${td} text-right`}>{formatNumber(t.totalPowerMW, 2)}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExcel} disabled={busy !== null}>
-              {busy === 'excel' ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
-              Excel (.xlsx)
-            </Button>
-            <Button onClick={handlePDF} disabled={busy !== null}>
-              {busy === 'pdf' ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-              PDF Rapor
-            </Button>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
-  );
-}
-
-function KPIBlock({ label, value, note }: { label: string; value: string; note: string }) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-      <p className="text-xs uppercase font-semibold text-slate-500">{label}</p>
-      <p className="text-2xl font-bold text-slate-900 mt-2 tabular-nums">{value}</p>
-      <p className="text-xs text-slate-500 mt-1">{note}</p>
-    </div>
-  );
-}
-
-function BigKPI({ label, value, color, highlight }: { label: string; value: string; color: string; highlight?: boolean }) {
-  return (
-    <div className={`rounded-xl p-4 border ${color} ${highlight ? 'shadow-md' : ''}`}>
-      <p className={`text-xs font-semibold uppercase ${highlight ? 'text-white/80' : ''}`}>{label}</p>
-      <p className={`${highlight ? 'text-3xl' : 'text-xl'} font-bold mt-1 tabular-nums`}>{value}</p>
-    </div>
-  );
-}
-
-function SmallStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-slate-50 rounded-lg p-3">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="text-base font-bold text-slate-900 tabular-nums">{value}</p>
     </div>
   );
 }

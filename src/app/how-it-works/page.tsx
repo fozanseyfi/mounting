@@ -111,7 +111,7 @@ const STEPS: Step[] = [
         { label: 'Galvaniz', value: '600 g/m² (sıcak daldırma)' },
         { label: 'Fire', value: 'Varsayılan %2 — kalem bazında ayarlanır' },
       ],
-      tip: 'Verimlilik metriği kg/MW — sektör ortalaması 15-25 ton/MW arasıdır.',
+      tip: 'Verimlilik metriği Ton / MWp — sektör ortalaması 15-25 Ton / MWp arasıdır.',
     },
   },
   {
@@ -121,9 +121,9 @@ const STEPS: Step[] = [
     icon: Wallet,
     details: {
       intro:
-        '"Maliyet" sekmesinde birim fiyatları girersiniz (₺/$/€ cinsinden seçilebilir): Sac fiyatı (TL/kg), galvaniz kaplama (TL/kg), büküm + işçilik (TL/kg çelik), bağlantı elemanları (TL/kg), nakliye (sabit TL), diğer giderler (sabit TL). Toplam maliyet, /MW ve /ton birim maliyetler anlık hesaplanır.',
+        '"Maliyet" sekmesinde birim fiyatları girersiniz (tüm birimler USD): Sac fiyatı (USD/kg), galvaniz kaplama (USD/kg), büküm + işçilik (USD/kg çelik), bağlantı elemanları (USD/kg), nakliye (sabit USD), diğer giderler (sabit USD). Toplam maliyet ve USD / MWp anlık hesaplanır.',
       bullets: [
-        { label: 'Para birimi', value: 'TRY · USD · EUR' },
+        { label: 'Para birimi', value: 'USD' },
         { label: 'Anlık', value: 'Form değişince hesap güncel' },
         { label: 'Görselleştirme', value: 'Kalem dağılımı %\'li progress bar' },
       ],

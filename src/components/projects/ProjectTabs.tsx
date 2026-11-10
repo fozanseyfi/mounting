@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Boxes, Wallet, Box, FileBarChart } from 'lucide-react';
+import { Boxes, Wallet, Box, FileBarChart, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/toast';
 import type { Project, TableType } from '@/types';
 import { TableTypesTab } from './TableTypesTab';
 import { CostTab } from './CostTab';
@@ -22,6 +23,49 @@ const TableDesigner = dynamic(() => import('./TableDesigner').then((m) => m.Tabl
 const TAB =
   'rounded-b-none rounded-t px-4 py-2 text-[13px] font-semibold text-[#b3c2d8] hover:bg-white/10 hover:text-white data-[state=active]:bg-[#f4f5f7] data-[state=active]:text-[#16304f] data-[state=active]:shadow-none data-[state=active]:hover:bg-[#f4f5f7]';
 
+/** Sekme şeridinin sağındaki mavi Excel / PDF rapor düğmeleri */
+function ExportButtons({ project }: { project: Project }) {
+  const { toast } = useToast();
+  const [busy, setBusy] = useState<'xlsx' | 'pdf' | null>(null);
+  const ready = (project.totals?.grandTotal || 0) > 0;
+
+  async function run(kind: 'xlsx' | 'pdf') {
+    setBusy(kind);
+    try {
+      if (kind === 'pdf') {
+        const { downloadPDF } = await import('@/lib/export/pdf');
+        await downloadPDF(project);
+        toast('PDF raporu indirildi', 'success');
+      } else {
+        const { downloadExcel } = await import('@/lib/export/excel');
+        await downloadExcel(project);
+        toast('Excel raporu indirildi', 'success');
+      }
+    } catch {
+      toast(kind === 'pdf' ? 'PDF oluşturulamadı' : 'Excel oluşturulamadı', 'error');
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const btn =
+    'inline-flex h-8 shrink-0 items-center gap-1.5 rounded bg-blue-600 px-3 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50';
+  const title = ready ? undefined : 'Önce masa tipi ve parça girin';
+
+  return (
+    <div className="flex shrink-0 items-center gap-1.5 self-center py-1">
+      <button type="button" className={btn} disabled={!ready || busy !== null} title={title} onClick={() => run('xlsx')}>
+        {busy === 'xlsx' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileSpreadsheet className="h-3.5 w-3.5" />}
+        Excel Al
+      </button>
+      <button type="button" className={btn} disabled={!ready || busy !== null} title={title} onClick={() => run('pdf')}>
+        {busy === 'pdf' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
+        PDF Rapor Al
+      </button>
+    </div>
+  );
+}
+
 export function ProjectTabs({ project }: { project: Project }) {
   const router = useRouter();
   function refresh() { router.refresh(); }
@@ -29,12 +73,15 @@ export function ProjectTabs({ project }: { project: Project }) {
   return (
     <Tabs defaultValue="types" className="w-full">
       {/* Fizibilite model sekmeleri gibi: koyu şerit, aktif sekme açık zemin (içerik ile birleşir) */}
-      <TabsList className="project-tabs flex h-auto w-full justify-start gap-0.5 overflow-x-auto rounded-md rounded-b-none bg-[#16304f] p-1 pb-0 text-[#b3c2d8]">
-        <TabsTrigger value="types" className={TAB}><Boxes className="w-4 h-4" /> Masa Tipleri <span className="ml-1 rounded bg-white/15 px-1.5 text-[11px] tabular-nums">{project.tableTypes.length}</span></TabsTrigger>
-        <TabsTrigger value="cost" className={TAB}><Wallet className="w-4 h-4" /> Maliyet</TabsTrigger>
-        <TabsTrigger value="3d" className={TAB}><Box className="w-4 h-4" /> 3D</TabsTrigger>
-        <TabsTrigger value="summary" className={TAB}><FileBarChart className="w-4 h-4" /> Özet & Rapor</TabsTrigger>
-      </TabsList>
+      <div className="project-tabs flex items-end gap-2 rounded-md rounded-b-none bg-[#16304f] pr-2">
+        <TabsList className="flex h-auto min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto rounded-none bg-transparent p-1 pb-0 text-[#b3c2d8]">
+          <TabsTrigger value="types" className={TAB}><Boxes className="w-4 h-4" /> Masa Tipleri <span className="ml-1 rounded bg-white/15 px-1.5 text-[11px] tabular-nums">{project.tableTypes.length}</span></TabsTrigger>
+          <TabsTrigger value="cost" className={TAB}><Wallet className="w-4 h-4" /> Maliyet</TabsTrigger>
+          <TabsTrigger value="3d" className={TAB}><Box className="w-4 h-4" /> 3D</TabsTrigger>
+          <TabsTrigger value="summary" className={TAB}><FileBarChart className="w-4 h-4" /> Özet & Rapor</TabsTrigger>
+        </TabsList>
+        <ExportButtons project={project} />
+      </div>
 
       <TabsContent className="mt-0 rounded-b-md border border-t-0 bg-[#f4f5f7] p-3" value="types">
         <TableTypesTab project={project} onChange={refresh} />

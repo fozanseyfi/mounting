@@ -14,7 +14,7 @@ export async function downloadExcel(project: Project) {
 
   const t = project.totals!;
   const c = project.cost;
-  const sym = project.pricing?.currency === 'USD' ? '$' : project.pricing?.currency === 'EUR' ? '€' : '₺';
+  const sym = 'USD';
 
   // =========== Özet ===========
   const summary = workbook.addWorksheet('Özet');
@@ -46,7 +46,7 @@ export async function downloadExcel(project: Project) {
     ['GRAND TOTAL [ton]', formatNumber(t.grandTotal, 3)],
     ['Toplam Panel [adet]', t.totalPanels],
     ['Toplam Güç [MW]', formatNumber(t.totalPowerMW, 3)],
-    ['kg / MW', formatNumber(t.kgPerMW, 1)],
+    ['Ton / MWp', formatNumber(t.kgPerMW / 1000, 2)],
   ];
   for (const [k, v] of kpis) {
     summary.getCell(`A${r}`).value = k;
@@ -72,8 +72,8 @@ export async function downloadExcel(project: Project) {
       ['Nakliye', `${formatNumber(c.transportationCost, 0)} ${sym}`],
       ['Diğer Giderler', `${formatNumber(c.otherCosts, 0)} ${sym}`],
       ['TOPLAM MALİYET', `${formatNumber(c.totalCost, 0)} ${sym}`],
-      ['/ MW', `${formatNumber(c.costPerMW, 0)} ${sym}`],
-      ['/ ton', `${formatNumber(c.costPerTon, 0)} ${sym}`],
+      ['USD / MWp', `${formatNumber(c.costPerMW, 0)} USD / MWp`],
+      ['Ton / MWp', `${formatNumber(t.kgPerMW / 1000, 2)} Ton / MWp`],
     ];
     for (const [k, v] of costs) {
       summary.getCell(`A${r}`).value = k;
@@ -98,7 +98,7 @@ export async function downloadExcel(project: Project) {
     { header: 'Panel/Masa', width: 12 },
     { header: 'Tek Masa (kg)', width: 14 },
     { header: 'Toplam Tonaj (ton)', width: 16 },
-    { header: 'MW', width: 10 },
+    { header: 'MWp', width: 10 },
   ];
   types.getRow(1).eachCell((cell) => {
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: GREEN } };

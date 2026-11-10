@@ -11,7 +11,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const body = await req.json();
   const data: Record<string, unknown> = {
-    currency: body.currency || 'TRY',
+    currency: 'USD',
     notes: body.notes ?? null,
   };
   for (const k of NUM) data[k] = Number(body[k]) || 0;

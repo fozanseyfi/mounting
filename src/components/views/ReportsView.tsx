@@ -28,7 +28,7 @@ export function ReportsView({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Stat icon={FileBarChart} label="Toplam Proje" value={String(projects.length)} />
           <Stat icon={FileSpreadsheet} label="Toplam Tonaj" value={`${formatNumber(totalTonnage)} ton`} />
-          <Stat icon={FileText} label="Kurulu Güç" value={`${formatNumber(totalMW)} MW`} />
+          <Stat icon={FileText} label="Kurulu Güç" value={`${formatNumber(totalMW)} MWp`} />
         </div>
 
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
@@ -42,7 +42,7 @@ export function ReportsView({
                 <th className="text-left px-6 py-3">Proje</th>
                 <th className="text-left px-6 py-3">Müşteri</th>
                 <th className="text-right px-6 py-3">Tonaj</th>
-                <th className="text-right px-6 py-3">Güç (MW)</th>
+                <th className="text-right px-6 py-3">Güç (MWp)</th>
                 <th className="text-left px-6 py-3">Güncellendi</th>
                 <th className="text-right px-6 py-3"></th>
               </tr>
