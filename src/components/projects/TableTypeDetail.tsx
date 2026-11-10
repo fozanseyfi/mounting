@@ -38,7 +38,7 @@ export function TableTypeDetail({ projectId, tableType, onChange, actions }: Pro
       {/* Tek satır: tip adı · sekmeler · Ekle · düzenle/sil — kaydırırken üstte kalır */}
       <div className="sticky top-14 z-10 -mx-4 -mt-4 flex items-center gap-2 rounded-t-md border-b bg-white px-4 pt-1.5">
         <h4 className="mr-2 shrink-0 pb-1.5 text-sm font-bold text-slate-900">{tableType.name}</h4>
-        <TabsList className="h-auto min-w-0 flex-1 justify-start gap-1 overflow-x-auto rounded-none bg-transparent p-0">
+        <TabsList className="h-auto min-w-0 flex-1 justify-start gap-1 overflow-visible rounded-none bg-transparent p-0">
           <TabsTrigger value="parts" className={SUB}>
             <Boxes className="w-4 h-4" /> Sehpa Parçaları
             <span className="ml-1 text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">{parts.length}</span>

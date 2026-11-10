@@ -37,7 +37,7 @@ export function ProjectDetailView({
           >
             <ArrowLeft className="size-4" />
           </Link>
-          <h1 className="truncate text-base font-bold leading-tight text-slate-900" data-no-i18n>
+          <h1 className="max-w-[24rem] shrink-0 truncate text-base font-bold leading-tight text-slate-900" data-no-i18n>
             {project.name}
           </h1>
           <span className={`shrink-0 rounded border px-1.5 py-px text-[10px] font-semibold ${status.color}`}>{status.label}</span>
@@ -54,6 +54,10 @@ export function ProjectDetailView({
           <Kpi label="Kurulu Güç" value={`${formatNumber(t?.totalPowerMW || 0)} MWp`} />
           <Kpi label="Toplam Tonaj" value={`${formatNumber(t?.grandTotal || 0)} ton`} strong />
           <Kpi label="Çelik Yoğunluğu" value={`${formatNumber(t && t.totalPowerMW > 0 ? t.grandTotal / t.totalPowerMW : 0, 1)} Ton / MWp`} />
+          <Kpi
+            label="Birim Maliyet"
+            value={project.cost && project.cost.totalCost > 0 ? `${formatNumber(project.cost.costPerMW, 0)} USD / MWp` : '— USD / MWp'}
+          />
         </dl>
       </div>
 
@@ -64,7 +68,7 @@ export function ProjectDetailView({
 
 function Kpi({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div className="whitespace-nowrap px-4 leading-tight first:pl-0 last:pr-0">
+    <div className="whitespace-nowrap px-3 leading-tight first:pl-0 last:pr-0">
       <dt className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className={`text-sm tabular-nums ${strong ? 'font-bold text-primary-dark' : 'font-semibold text-slate-800'}`}>{value}</dd>
     </div>

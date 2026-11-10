@@ -77,7 +77,7 @@ export function ProjectTabs({ project }: { project: Project }) {
     <Tabs defaultValue="types" className="w-full">
       {/* Fizibilite model sekmeleri gibi: koyu şerit, aktif sekme açık zemin (içerik ile birleşir) */}
       <div className="project-tabs flex items-end gap-2 rounded-md rounded-b-none bg-[#16304f] pr-2">
-        <TabsList className="flex h-auto min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto rounded-none bg-transparent p-1 pb-0 text-[#b3c2d8]">
+        <TabsList className="flex h-auto min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto overflow-y-hidden rounded-none bg-transparent p-1 pb-0 text-[#b3c2d8]">
           <TabsTrigger value="types" className={TAB}><Boxes className="w-4 h-4" /> Masa Tipleri <span className="ml-1 rounded bg-white/15 px-1.5 text-[11px] tabular-nums">{project.tableTypes.length}</span></TabsTrigger>
           <TabsTrigger value="cost" className={TAB}><Wallet className="w-4 h-4" /> Maliyet</TabsTrigger>
           <TabsTrigger value="3d" className={TAB}><Box className="w-4 h-4" /> 3D</TabsTrigger>
