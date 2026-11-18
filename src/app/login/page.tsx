@@ -8,6 +8,7 @@ import { readProfile, writeProfile } from '@/lib/local-profile';
 import { login } from '@/lib/session';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LocaleToggle } from '@/components/LocaleToggle';
+import { TourLink, TourPromo } from '@/components/auth/tour-promo';
 
 /** Basit giriş ekranı — Supabase girişi gelene kadar yerel profil ile oturum açar. */
 export default function LoginPage() {
@@ -70,8 +71,13 @@ export default function LoginPage() {
               Şifreli giriş, platformun kendi veritabanı (Supabase) bağlandığında aktif olacak.
             </p>
           </form>
+          <div className="mt-4">
+            <TourLink />
+          </div>
         </div>
       </div>
+      {/* Platform tanıtımı — giriş yapmadan önce gerçek ekranlarla */}
+      <TourPromo />
     </div>
   );
 }

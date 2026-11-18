@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Bell,
   Boxes,
+  PlayCircle,
   ChevronDown,
   Share2,
   ChevronLeft,
@@ -73,8 +74,11 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: 'Diğer Platformlar',
-    items: [{ href: '/platforms', icon: Boxes, label: 'Diğer Platformlar' }],
+    label: 'Platformlarım',
+    items: [
+      { href: '/platform-tanitimi', icon: PlayCircle, label: 'Platform Tanıtımı' },
+      { href: '/platforms', icon: Boxes, label: 'Platformlarım' },
+    ],
   },
 ];
 

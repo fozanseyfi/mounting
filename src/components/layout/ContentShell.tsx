@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 
 /** Diğer platformlarla ortak şablonu koruyan sayfalar: klasik görünüm uygulanmaz */
-const PLATFORM_ROUTES = ['/account', '/contact', '/platforms'];
+const PLATFORM_ROUTES = ['/account', '/contact', '/platforms', '/platform-tanitimi'];
 const isPlatformRoute = (p: string) => PLATFORM_ROUTES.some((r) => p === r || p.startsWith(`${r}/`));
 
 /** İçerik alanı: Fizibilite platformundaki klasik (kurumsal) görünümü uygular. */

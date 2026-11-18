@@ -16,7 +16,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const isLogin = pathname === '/login';
   // Paylaşım linki sayfası herkese açık: kabuk yok, oturum gerekmez
-  const isPublic = pathname === '/p';
+  const isPublic = pathname === '/p' || pathname === '/tanitim';
   const [out, setOut] = useState(false);
 
   useEffect(() => {
