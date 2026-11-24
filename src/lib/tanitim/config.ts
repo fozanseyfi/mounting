@@ -9,7 +9,7 @@ export const TOUR = {
   /** Gece modunda vurgu rengi */
   accentDark: "#34d399",
   /** Tarayıcı çerçevesindeki adres */
-  domain: "mounting.fozanseyfi.com",
+  domain: "konstruksiyon.fozanseyfi.com",
   /** Giriş sayfasındaki tanıtım şeridinin açıklaması */
   promoText:
     "Projeden masa tiplerine, sehpa parçalarından bağlantı elemanlarına, tonaj ve maliyetten 3B görünüme ve rapora kadar bütün adımlar gerçek ekranlar üzerinden anlatılıyor: hangi değer nereye yazılır, sonuç nerede okunur.",
